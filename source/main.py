@@ -2,10 +2,10 @@ import websocket, json, pprint, talib, numpy
 from binance.client import Client
 from binance.enums import *
 
-import config, RSI_Trade01, fill_order
+import config, RSI_Trade01, order_actions
 
 
-client = Client(config.API_KEY, config.API_SECRET)
+client = Client(config.API_KEY, config.API_SECRET, tld="com")
 
 
 
