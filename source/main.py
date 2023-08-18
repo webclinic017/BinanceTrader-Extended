@@ -4,11 +4,11 @@ from binance.enums import *
 
 import config, RSI_Trade01, order_actions
 
-
+#tld: "us" for usa based IP and "com" for global
 client = Client(config.API_KEY, config.API_SECRET, tld="com")
 
 
-
+# Get data from binance. graph: ltcbusd, timeframe: 1m
 SOCKET = "wss://stream.binance.com:9443/ws/ltcbusd@kline_1m"
 
 
