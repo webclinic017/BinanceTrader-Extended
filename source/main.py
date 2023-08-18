@@ -10,7 +10,7 @@ client = Client(config.API_KEY, config.API_SECRET, tld="com")
 
 
 # Get data from binance. graph: "ltcbusd"(change this in config.), timeframe: 1m
-SOCKET = "wss://stream.binance.com:9443/ws/{trade_symbol}@kline_1m".format(config.TRADE_SYMBOL)
+SOCKET = "wss://stream.binance.com:9443/ws/{trade_symbol}@kline_1m".format(config.TRADE_SYMBOL.lower)
 
 
 
