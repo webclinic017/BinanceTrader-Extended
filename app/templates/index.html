@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BinanceTrader</title>
+
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+
+
+</head>
+
+<body>
+    <h2>Trades</h2>
+
+    <div id="chart"></div>
+
+    <div id="trades"></div>
+    <h3>Settings</h3>
+    <div id="settings">
+
+        <div>
+            <input type="checkbox">
+            <label>RSI</label>
+            <input type="text" name="rsi_length" id="rsi_length" placeholder="14" />
+            Overbought
+            <input type="text" name="rsi_overbought" id="rsi_overbought" placeholder="70">
+            Oversold
+            <input type="text" name="rsi_oversold" id="rsi_oversold" placeholder="30">
+        </div>
+    </div>
+    <script>
+        //var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/ltcbusd@trade");
+
+        var tradeDiv = document.getElementById("trades")
+
+        /*
+        binanceSocket.onmessage = (event) => {
+            console.log(event.data);
+ 
+            var messageObject = JSON.parse(event.data)
+ 
+            tradeDiv.append(messageObject.p)
+        };
+        */
+    </script>
+    <script src="../static/chart.js"></script> <!--  {{url_for('static', filename='chart.js')}}   -->
+</body>
+
+</html>
