@@ -2,12 +2,16 @@ from binance.client import Client
 from binance.enums import *
 import numpy, talib
 
+from config import TRADE_SYMBOL as TS
+
 import order_actions
 
+
+# Set-up these variable for your own liking.
 RSI_PERIOD = 14
 RSI_OVERBOUGHT = 70
 RSI_OVERSOLD = 30
-TRADE_SYMBOL = "LTCBUSD"
+TRADE_SYMBOL = TS.upper # change trade symbol in config
 USE_TRADE_QUANTITY = "Y"
 TRADE_QUANTITY = 0.2
 
@@ -65,6 +69,8 @@ def calculate_trade(client, closes):
                     #Binance buy logic
         except Exception as e:
             print(e)
+
+
 def cook_order(side_order):
     cooked_order = "+".join([str(TRADE_SYMBOL), str(side_order), str(USE_TRADE_QUANTITY), str(TRADE_QUANTITY)])
     print("cooked order = " + cooked_order)
