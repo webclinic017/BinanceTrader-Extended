@@ -1,18 +1,28 @@
 import websocket, json, pprint, talib, numpy
 from binance.client import Client
 from binance.enums import *
+import csv
 
-import config, RSI_Trade01, order_actions
+import config, RSI_Trade01, order_actions, khistory
 
 #tld: "us" for usa based IP and "com" for global.
 client = Client(config.API_KEY, config.API_SECRET, tld="com")
 
-
+TRADE_SYMBOL = config.TRADE_SYMBOL.upper()
+TRADE_INTERVAL = KLINE_INTERVAL_1MINUTE
 
 # Get data from binance. graph: "ltcbusd"(change this in config.), timeframe: 1m
-SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_1m".format(config.TRADE_SYMBOL.lower())
+SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
 
-print(SOCKET)
+#candles_recent = client.get_klines(symbol = TRADE_SYMBOL, interval = TRADE_INTERVAL)
+
+# candles_csv = open("{}_{}_recent".format(TRADE_SYMBOL, TRADE_INTERVAL), "w", newline="")
+
+# candles_writer = csv.writer(candles_csv, delimiter=",")
+# for candle in candles_recent:
+#     candles_writer.writerow(candle)
+
+khistory.get_khistory(client, TRADE_SYMBOL, TRADE_INTERVAL)
 
 #this is the array for storing closed candle values gathered from socket.
 closes = []
@@ -46,8 +56,8 @@ def on_message(ws, message):
         print(closes)
         RSI_Trade01.calculate_trade(client = client, closes = closes)
 
-        
-        
+
+
 
 
 
