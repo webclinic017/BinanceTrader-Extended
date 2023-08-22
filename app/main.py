@@ -14,6 +14,8 @@ TRADE_INTERVAL = KLINE_INTERVAL_1MINUTE
 # Get data from binance. graph: "ltcbusd"(change this in config.), timeframe: 1m
 SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
 
+
+use_only_recent = True
 #candles_recent = client.get_klines(symbol = TRADE_SYMBOL, interval = TRADE_INTERVAL)
 
 # candles_csv = open("{}_{}_recent".format(TRADE_SYMBOL, TRADE_INTERVAL), "w", newline="")
@@ -22,10 +24,40 @@ SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lowe
 # for candle in candles_recent:
 #     candles_writer.writerow(candle)
 
-khistory.get_khistory(client, TRADE_SYMBOL, TRADE_INTERVAL)
 
-#this is the array for storing closed candle values gathered from socket.
+if not use_only_recent:
+
+    khistory.download_khistory(client, TRADE_SYMBOL, TRADE_INTERVAL)
+
+    kdata = khistory.get_klineHistory_from_file(TRADE_SYMBOL, TRADE_INTERVAL)
+
+    try:
+        kcloses = kdata[:,4]
+        kcloses = kcloses.tolist()
+    except Exception as e:
+        print(e)
+        kcloses = []
+
+else:
+
+    kdata = client.get_klines(symbol= TRADE_SYMBOL, interval = TRADE_INTERVAL)
+
+    kcloses = []
+
+    for kline in kdata:
+        price_closed = float(kline[4])
+        kcloses.append(price_closed)
+    
+
+print(kcloses)
+
+
+#this is the array for storing closed candle values gathered from socket and file.
 closes = []
+closes = kcloses
+print(len(closes))
+
+
 
 def on_open(ws):
     print("opened connection")
@@ -37,6 +69,7 @@ def on_close(ws):
 
 def on_message(ws, message):
     global closes
+    global np_closes
 
     print("received message")
     json_message = json.loads(message)
@@ -54,6 +87,7 @@ def on_message(ws, message):
         closes.append(float(price_closed))
         print("closes")
         print(closes)
+        print(len(closes))
         RSI_Trade01.calculate_trade(client = client, closes = closes)
 
 

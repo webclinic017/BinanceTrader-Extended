@@ -23,6 +23,7 @@ sell_if_up_ratio = 1.02
 def calculate_trade(client, closes):
     global in_position
     global price_of_position
+    print("inside RSI_Trade01")
     if len(closes) > RSI_PERIOD:
         np_closes = numpy.array(closes)
         rsi = talib.RSI(np_closes, RSI_PERIOD) #talib.RSI returns multiple RSI values 
