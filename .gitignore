@@ -2,3 +2,4 @@ venv
 source/config.py
 klineHistory*
 LTCBUSD*
+.env
