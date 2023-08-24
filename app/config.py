@@ -1,11 +1,10 @@
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values 
 from pathlib import Path
 import os
 
-dotenv_path = Path(".") / ".env" #path to .env file
+dotenv_path = Path(__file__).with_name('.env') #path to .env file
 
 load_dotenv(dotenv_path = dotenv_path)
-
 TRADE_SYMBOL = os.getenv("TRADE_SYMBOL")
 
 class Binance_Config:

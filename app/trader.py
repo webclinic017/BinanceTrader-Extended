@@ -9,7 +9,7 @@ import config, RSI_Trade01, order_actions, khistory
 client = Client(config.Binance_Config.BINANCE_API_KEY, config.Binance_Config.BINANCE_API_SECRET, tld="com")
 
 TRADE_SYMBOL = config.TRADE_SYMBOL.upper()
-TRADE_INTERVAL = KLINE_INTERVAL_5MINUTE
+TRADE_INTERVAL = KLINE_INTERVAL_1MINUTE
 
 # Get data from binance. graph: "ltcbusd"(change this in config.), timeframe: 1m
 SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
