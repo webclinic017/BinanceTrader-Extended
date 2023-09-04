@@ -13,13 +13,13 @@
 </head>
 
 <body>
-    <h2>Trades</h2>
+    <h2>{{ title }}</h2>
 
     <div id="chart"></div>
 
     <div id="trades"></div>
     <h3>Settings</h3>
-    <div id="settings">
+    <div id="settings ">
 
         <div>
             <input type="checkbox">
@@ -46,7 +46,8 @@
         };
         */
     </script>
-    <script src="../static/chart.js"></script> <!--  {{url_for('static', filename='chart.js')}}   -->
+    <!-- <script src="../static/chart.js"></script> -->
+    <script src="{{ url_for('static', filename='chart.js' )}}"></script>
 </body>
 
 </html>
