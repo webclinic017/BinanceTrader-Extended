@@ -32,6 +32,25 @@
         </div>
     </div>
 
+    <div style="border:solid gray 1px; padding: 20px; width: 600px; margin: 20px;">
+        <h2>Quick Trade</h2>
+        <form action="/quicktrade" method="post">
+            <select id="trade_symbol" name="trade_symbol">
+                {% for symbol in exc_trade_symbols %}
+                <option>{{symbol['symbol']}}</option>
+                {% endfor %}
+            </select>
+            <input type="text" id="trade_quantity" name="trade_quantity" placeholder="1.0">
+            <input type="submit" name="trade_action" value="buy">
+            <input type="submit" name="trade_action" value="sell">
+        </form>
+        <div>
+            {% for mesg in get_flashed_messages() %}
+            <h3>{{ mesg }}</h3>
+            {% endfor %}
+        </div>
+    </div>
+
 
     <div id="acc_balances">
         <h2>Account Balances</h2>

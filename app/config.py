@@ -17,3 +17,4 @@ class Flask_Config:
     # Set Flask Environment Variables From .env
     DEBUG = os.getenv("FLASK_DEBUG")
     SERVER = os.getenv("FLASK_SERVER")
+    SECRET_KEY = bytes(os.getenv("FLASK_SECRET_KEY"), encoding="utf-8")

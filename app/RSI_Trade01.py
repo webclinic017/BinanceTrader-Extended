@@ -33,6 +33,7 @@ def calculate_trade(client, closes):
 
         last_rsi = rsi[-1]
         print("the current rsi is {}".format(last_rsi))
+        print("in position: {}".format(in_position))
         last_close = closes[-1]
 
         try:
