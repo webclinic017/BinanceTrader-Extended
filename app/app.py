@@ -2,9 +2,10 @@ from flask import Flask, render_template
 
 import config, bclient
 
+bconnection = False
 try:
     myClient = bclient.MyClient(config.Binance_Config())
-    
+    bconnection = True
 except Exception as e:
     print(e)
 
@@ -16,11 +17,13 @@ app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fi
 @app.route("/")
 def index():
     title = "Binance Trader"
-    if myClient:
-        accInfo = myClient.client.get_account()
 
-    print(accInfo)
-    return render_template("index.html", title = title)
+    if bconnection:
+        acc_info = myClient.client.get_account()
+        acc_balances = acc_info["balances"]    
+
+    print()
+    return render_template("index.html", title = title, acc_balances= acc_balances)
 
 @app.route("/buy/")
 def buy():

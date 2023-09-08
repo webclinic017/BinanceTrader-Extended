@@ -31,6 +31,32 @@
             <input type="text" name="rsi_oversold" id="rsi_oversold" placeholder="30">
         </div>
     </div>
+
+
+    <div id="acc_balances">
+        <h2>Account Balances</h2>
+        <table>
+            {% for acc_balance in acc_balances %}
+            {% if acc_balance["free"] | float > 0 %}
+            <tr>
+                <td>
+                    {{ acc_balance["asset"] }}
+                </td>
+                <td>
+                    {{acc_balance["free"]}}
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </table>
+
+
+
+    </div>
+
+
+
+
     <script>
         //var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/ltcbusd@trade");
 
