@@ -1,3 +1,4 @@
+/* these values can be given dynamically in the future*/
 var TRADE_SYMBOL = "LTCUSDT"
 var TRADE_INTERVAL = "1m"
 
@@ -54,6 +55,8 @@ var candleSeries = chart.addCandlestickSeries({
     wickUpColor: 'rgba(255, 144, 0, 1)',
 });
 
+/* get past data from flask page*/
+/* trade parameters will be given to this link to get custom results in the future. Until then this link works with the first of the trade list values from .env*/
 fetch('http://127.0.0.1:5000/history')
     .then((r) => r.json())
     .then((response) => {
@@ -63,15 +66,12 @@ fetch('http://127.0.0.1:5000/history')
     })
 
 
-
+/* Get and update chart with real-time values from this websocket */
 var SOCKET = `wss://stream.binance.com:9443/ws/${TRADE_SYMBOL.toLowerCase()}@kline_${TRADE_INTERVAL}`
-
-console.log(SOCKET)
+/*console.log(SOCKET)*/
 var binanceSocket = new WebSocket(SOCKET)
-
 binanceSocket.onmessage = function (event) {
     var message = JSON.parse(event.data);
-
     var candlestick = message.k
     candleSeries.update({
         time: candlestick.t / 1000, /* dividing with 1000 to remove milliseconds*/
