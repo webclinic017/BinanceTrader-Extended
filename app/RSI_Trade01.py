@@ -2,7 +2,7 @@ from binance.client import Client
 from binance.enums import *
 import numpy, talib
 
-from config import TRADE_SYMBOL as TS
+from config import TRADE_SYMBOLS as TS
 
 import order_actions
 
@@ -11,7 +11,7 @@ import order_actions
 RSI_PERIOD = 14
 RSI_OVERBOUGHT = 70
 RSI_OVERSOLD = 30
-TRADE_SYMBOL = TS.upper() # change trade symbol in config
+TRADE_SYMBOL = TS[0].upper() # change trade symbol in config
 USE_TRADE_QUANTITY = "Y"
 TRADE_QUANTITY = 0.2
 

@@ -1,6 +1,6 @@
-from flask import Flask, render_template, redirect, request, flash
+from flask import Flask, render_template, redirect, request, flash, jsonify
 
-import config, bclient
+import config, bclient, chart_actions
 
 bconnection = False
 try:
@@ -30,6 +30,7 @@ def index():
     print()
     return render_template("index.html", title = title, acc_balances= acc_balances, exc_trade_symbols = exc_trade_symbols)
 
+
 @app.route("/quicktrade/", methods = ["POST"])
 def quicktrade():
     print(request.form)
@@ -46,6 +47,7 @@ def quicktrade():
         flash("Quick Trade Successful", "message")
     return redirect("/")
 
+
 @app.route("/buy/", methods = ["POST"])
 def buy():
     
@@ -61,4 +63,11 @@ def sell():
 def settings():
     return "settings"
 
+
+@app.route("/history")
+def history():
+
+    candlesticks = myClient.client.get_historical_klines(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], "15 days")
+    p_klines = chart_actions.process_klineslist_to_chartdictformat(candlesticks)
+    return(jsonify(p_klines))
 
