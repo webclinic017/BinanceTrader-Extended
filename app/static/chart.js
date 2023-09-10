@@ -6,6 +6,7 @@ var TRADE_INTERVAL = "1m"
 var chart = LightweightCharts.createChart(document.getElementById("chart"), {
     width: 1000,
     height: 500,
+    locale: "tr",
     fontFamily: "-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif",
     topColor: 'rgba(21, 146, 230, 0.4)',
     bottomColor: 'rgba(21, 146, 230, 0)',
