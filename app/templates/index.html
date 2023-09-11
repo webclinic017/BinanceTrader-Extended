@@ -12,70 +12,74 @@
 
 </head>
 
-<body>
+<body
+    style="font-family:-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif; background-color:whitesmoke; ">
     <h2>{{ title }}</h2>
-    <div id="chart_holder">
-        {{ display1_trade_symbol }} | {{ display1_trade_interval }}
-        <div id="chart"></div>
-    </div>
+    <div>
+        <div style=" display: inline-block;">
+            <div id="chart_holder">
+                {{ display1_trade_symbol }} | {{ display1_trade_interval }}
+                <div id="chart"></div>
+            </div>
 
-    <div id="trades"></div>
-    <h3>Settings</h3>
-    <div id="settings ">
 
-        <div>
-            <input type="checkbox">
-            <label>RSI</label>
-            <input type="text" name="rsi_length" id="rsi_length" placeholder="14" />
-            Overbought
-            <input type="text" name="rsi_overbought" id="rsi_overbought" placeholder="70">
-            Oversold
-            <input type="text" name="rsi_oversold" id="rsi_oversold" placeholder="30">
+            <h3>Settings</h3>
+            <div id="settings ">
+
+                <div>
+                    <input type="checkbox">
+                    <label>RSI</label>
+                    <input type="text" name="rsi_length" id="rsi_length" placeholder="14" />
+                    Overbought
+                    <input type="text" name="rsi_overbought" id="rsi_overbought" placeholder="70">
+                    Oversold
+                    <input type="text" name="rsi_oversold" id="rsi_oversold" placeholder="30">
+                </div>
+            </div>
+            <div id="trades"></div>
+        </div>
+        <div style=" display: inline-block;  vertical-align: top;">
+            <div style="border:solid gray 1px; padding: 20px; width: 600px; margin: 20px; ">
+                <h2>Quick Trade</h2>
+                <form action="/quicktrade" method="post">
+                    <select id="trade_symbol" name="trade_symbol">
+                        {% for symbol in exc_trade_symbols %}
+                        <option>{{symbol['symbol']}}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" id="trade_quantity" name="trade_quantity" placeholder="1.0">
+                    <input type="submit" name="trade_action" value="buy">
+                    <input type="submit" name="trade_action" value="sell">
+                </form>
+                <div>
+                    {% for mesg in get_flashed_messages() %}
+                    <h3>{{ mesg }}</h3>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div id="acc_balances" style="text-align: center;">
+                <h2>Account Balances</h2>
+                <table style="margin-left: auto; margin-right: auto;">
+                    {% for acc_balance in acc_balances %}
+                    {% if acc_balance["free"] | float > 0 %}
+                    <tr>
+                        <td>
+                            {{ acc_balance["asset"] }}
+                        </td>
+                        <td>
+                            {{acc_balance["free"]}}
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% endfor %}
+                </table>
+
+
+
+            </div>
         </div>
     </div>
-
-    <div style="border:solid gray 1px; padding: 20px; width: 600px; margin: 20px;">
-        <h2>Quick Trade</h2>
-        <form action="/quicktrade" method="post">
-            <select id="trade_symbol" name="trade_symbol">
-                {% for symbol in exc_trade_symbols %}
-                <option>{{symbol['symbol']}}</option>
-                {% endfor %}
-            </select>
-            <input type="text" id="trade_quantity" name="trade_quantity" placeholder="1.0">
-            <input type="submit" name="trade_action" value="buy">
-            <input type="submit" name="trade_action" value="sell">
-        </form>
-        <div>
-            {% for mesg in get_flashed_messages() %}
-            <h3>{{ mesg }}</h3>
-            {% endfor %}
-        </div>
-    </div>
-
-
-    <div id="acc_balances">
-        <h2>Account Balances</h2>
-        <table>
-            {% for acc_balance in acc_balances %}
-            {% if acc_balance["free"] | float > 0 %}
-            <tr>
-                <td>
-                    {{ acc_balance["asset"] }}
-                </td>
-                <td>
-                    {{acc_balance["free"]}}
-                </td>
-            </tr>
-            {% endif %}
-            {% endfor %}
-        </table>
-
-
-
-    </div>
-
-
 
 
     <script>

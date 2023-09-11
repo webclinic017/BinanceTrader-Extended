@@ -16,13 +16,15 @@ var chart = LightweightCharts.createChart(document.getElementById("chart"), {
     crosshairMarkerVisible: false,
     crosshairMarkerRadius: 3,
 
-    /*layout: {
+    layout: {
         background: {
             type: 'solid',
-            color: '#f0c8f3',
+            color: "whitesmoke",
         },
-        textColor: 'rgba(255, 255, 255, 0.9)',
-    },*/
+        /*textColor: 'rgba(255, 255, 255, 0.9)',
+        */
+
+    },
     grid: {
         vertLines: {
             color: 'rgba(197, 203, 206, 0.5)',
