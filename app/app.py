@@ -19,7 +19,8 @@ app.secret_key = config.Flask_Config.SECRET_KEY
 @app.route("/")
 def index():
     title = "Binance Trader"
-
+    display1_trade_symbol = config.TRADE_SYMBOLS[0]
+    display1_trade_interval = config.TRADE_INTERVALS[0]
     if bconnection:
         acc_info = myClient.client.get_account()
         acc_balances = acc_info["balances"]
@@ -28,7 +29,13 @@ def index():
         exc_trade_symbols = exc_info["symbols"]
 
     print()
-    return render_template("index.html", title = title, acc_balances= acc_balances, exc_trade_symbols = exc_trade_symbols)
+    return render_template("index.html", 
+                           title = title, 
+                           acc_balances= acc_balances, 
+                           exc_trade_symbols = exc_trade_symbols, 
+                           display1_trade_symbol=display1_trade_symbol,
+                           display1_trade_interval = display1_trade_interval
+                           )
 
 
 @app.route("/quicktrade/", methods = ["POST"])

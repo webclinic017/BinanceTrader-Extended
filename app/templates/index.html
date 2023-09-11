@@ -14,8 +14,10 @@
 
 <body>
     <h2>{{ title }}</h2>
-
-    <div id="chart"></div>
+    <div id="chart_holder">
+        {{ display1_trade_symbol }} | {{ display1_trade_interval }}
+        <div id="chart"></div>
+    </div>
 
     <div id="trades"></div>
     <h3>Settings</h3>
