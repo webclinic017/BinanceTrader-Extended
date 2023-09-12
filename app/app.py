@@ -9,6 +9,12 @@ try:
 except Exception as e:
     print(e)
 
+#download and save kline history as a csv file on start
+if(True): 
+    bclient.khistory.asyncio.run(bclient.khistory.download_khistory(myClient.client, config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], DATE_PROMPT_START= "2022 -01-01", DATE_PROMPT_END="1 year")) 
+
+csv_name = bclient.khistory.get_csv_name(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0])
+bclient.backtest.run1(csv_name)
 
 
 #flask app 

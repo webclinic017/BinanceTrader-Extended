@@ -4,5 +4,6 @@ TA_Lib-0.4.26-cp39-cp39-win_amd64.whl #python3.9.* x64
 numpy
 websocket_client
 backtrader
+Matplotlib #backtrader plotting support
 flask
 python-dotenv
