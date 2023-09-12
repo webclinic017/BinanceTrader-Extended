@@ -7,7 +7,7 @@ from config import TRADE_SYMBOLS as TS
 import order_actions
 
 
-# Set-up these variable for your own liking.
+# Set up these variables to your own liking.
 RSI_PERIOD = 14
 RSI_OVERBOUGHT = 70
 RSI_OVERSOLD = 30
