@@ -11,8 +11,10 @@ class MyClient():
         #tld: "us" for usa based IP and "com" for global.
         self.client = Client(BinanceConfig.BINANCE_API_KEY, BinanceConfig.BINANCE_API_SECRET, tld="com")
 
+
     def printAPI(self):
         print(self.BinanceConfig.BINANCE_API_KEY)
+
 
     def fill_order(self, trade_symbol : str, side_order : str, use_trade_percentage : str, trade_quantity : float, order_type=ORDER_TYPE_MARKET):
         

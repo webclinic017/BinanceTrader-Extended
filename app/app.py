@@ -1,4 +1,5 @@
-from flask import Flask, render_template, redirect, request, flash, jsonify
+from flask import Flask, render_template, redirect, request, flash, jsonify, Response, url_for, session
+from datetime import datetime
 
 import config, bclient, chart_actions
 
@@ -9,12 +10,7 @@ try:
 except Exception as e:
     print(e)
 
-#download and save kline history as a csv file on start
-if(True): 
-    bclient.khistory.asyncio.run(bclient.khistory.download_khistory(myClient.client, config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], DATE_PROMPT_START= "2022 -01-01", DATE_PROMPT_END="1 year")) 
 
-csv_name = bclient.khistory.get_csv_name(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0])
-bclient.backtest.run1(csv_name, config.TRADE_INTERVALS[0])
 
 
 #flask app 
@@ -25,8 +21,12 @@ app.secret_key = config.Flask_Config.SECRET_KEY
 @app.route("/")
 def index():
     title = "Binance Trader"
+
+    #display 1
     display1_trade_symbol = config.TRADE_SYMBOLS[0]
     display1_trade_interval = config.TRADE_INTERVALS[0]
+
+    #quick trade
     if bconnection:
         acc_info = myClient.client.get_account()
         acc_balances = acc_info["balances"]
@@ -34,30 +34,44 @@ def index():
         exc_info = myClient.client.get_exchange_info()
         exc_trade_symbols = exc_info["symbols"]
 
-    print()
+
+    #Backtest Message
+    backtest_message = ""
+    if "backtest_message" in session:
+        backtest_message = session["backtest_message"]
+        session.pop("backtest_message", None)
+    
+    print(backtest_message)
+
+
+
     return render_template("index.html", 
                            title = title, 
                            acc_balances= acc_balances, 
                            exc_trade_symbols = exc_trade_symbols, 
                            display1_trade_symbol=display1_trade_symbol,
-                           display1_trade_interval = display1_trade_interval
+                           display1_trade_interval = display1_trade_interval,
+                           backtest_message = backtest_message
                            )
 
 
 @app.route("/quicktrade/", methods = ["POST"])
 def quicktrade():
     print(request.form)
+
+    #Quick Trade
     if request.form['trade_action'] == "buy":
         t_action = "BUY"
     if request.form['trade_action'] == "sell":
         t_action = "SELL"
 
-    result = myClient.fill_order( request.form['trade_symbol'], t_action, "N", request.form["trade_quantity"])
+    q_trade_result = myClient.fill_order( request.form['trade_symbol'], t_action, "N", request.form["trade_quantity"])
     
-    if result != True:
-        flash("Quick Trade Failed: " + result.message, "error")
+    if q_trade_result != True:
+        flash("Quick Trade Failed: " + q_trade_result.message, "error")
     else:
         flash("Quick Trade Successful", "message")
+    
     return redirect("/")
 
 
@@ -80,7 +94,30 @@ def settings():
 @app.route("/history")
 def history():
 
-    candlesticks = myClient.client.get_historical_klines(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], "15 days")
+    #candlesticks = myClient.client.get_historical_klines(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], "15 days")
+    candlesticks = myClient.client.get_klines(symbol = config.TRADE_SYMBOLS[0], interval = config.TRADE_INTERVALS[0])
     p_klines = chart_actions.process_klineslist_to_chartdictformat(candlesticks)
     return(jsonify(p_klines))
 
+
+@app.route("/bg-run-backtest/", methods = ["POST"])
+def bg_run_backtest():
+    print(request.form)
+    date_start = request.form["date_start"]
+    date_end = request.form["date_end"]
+    datetime_start = datetime.strptime(date_start, '%Y-%m-%d')
+    datetime_end = datetime.strptime(date_end, '%Y-%m-%d')
+
+    if date_end =="" or date_start == "" or date_end == date_start or datetime_end < datetime_start:
+        session["backtest_message"] = "backtest Failed - Wrong Dates"
+        return redirect(url_for("index"))
+    
+    #download and save kline history as a csv file
+    if(True): 
+        bclient.khistory.asyncio.run(bclient.khistory.download_khistory(myClient.client, config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
+
+    csv_name = bclient.khistory.get_csv_name(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0])
+    bclient.backtest.run1(csv_name, config.TRADE_INTERVALS[0])
+
+    session["backtest_message"] = "Success"
+    return redirect(url_for("index"))
