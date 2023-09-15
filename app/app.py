@@ -105,10 +105,15 @@ def bg_run_backtest():
     print(request.form)
     date_start = request.form["date_start"]
     date_end = request.form["date_end"]
+    
+    if date_end =="" or date_start == "":
+        session["backtest_message"] = "backtest Failed - Enter Dates"
+        return redirect(url_for("index"))
+    
     datetime_start = datetime.strptime(date_start, '%Y-%m-%d')
     datetime_end = datetime.strptime(date_end, '%Y-%m-%d')
 
-    if date_end =="" or date_start == "" or date_end == date_start or datetime_end < datetime_start:
+    if datetime_end <= datetime_start:
         session["backtest_message"] = "backtest Failed - Wrong Dates"
         return redirect(url_for("index"))
     
