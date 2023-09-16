@@ -2,11 +2,8 @@ import websocket, json, pprint, talib, numpy
 from binance.client import Client
 from binance.enums import *
 import csv
-
 import config, RSI_Trade01, order_actions, khistory
-
-import asyncio, websockets
-
+import asyncio, websockets, threading
 
 #async def create_and_start_btrader(myClient, TRADE_SYMBOL, TRADE_INTERVAL):
 #    btrader = bTrader(myClient, TRADE_SYMBOL, TRADE_INTERVAL)
@@ -16,7 +13,7 @@ import asyncio, websockets
 class bTrader():
 
     async def the_task(self):
-        asyncio.create_task(self.start_websocket())
+        await self.start_websocket()
 
 
     def __init__(self, myClient, TRADE_SYMBOL, TRADE_INTERVAL):
@@ -26,7 +23,13 @@ class bTrader():
         
         self.SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
         self.init_closes()
-        asyncio.run(self.the_task())
+
+        #loop = asyncio.get_event_loop()
+        #loop.create_task(self.the_task())
+
+        threading.Thread(target=self.start_websocket).start()
+        
+        #asyncio.run(self.the_task())
         
         
 
@@ -46,7 +49,7 @@ class bTrader():
         print(str(self.TRADE_SYMBOL) + str(self.TRADE_INTERVAL) + str(msg))
 
 
-    async def start_websocket(self):
+    def start_websocket(self):
         
 
         def on_open(ws):
@@ -86,15 +89,23 @@ class bTrader():
         #ws.run_forever()
 
         # https://betterprogramming.pub/websockets-and-asyncio-beyond-5-line-samples-part-1-ddf8699a18ce
-        conn = websockets.connect(uri= self.SOCKET)
+        def websocket_loop():
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        async with conn as ws: 
-            while True:
-                message = await ws.recv()
-                self.print(message)
+            conn = websockets.connect(uri= self.SOCKET)
 
+            async def inner_websocket_loop():
+                async with conn as ws: 
+                    while True:
+                        message = await ws.recv()
+                        self.print("message here")
+                        self.print(message)
+
+            loop.run_until_complete(inner_websocket_loop())
+
+        threading.Thread(target=websocket_loop).start()
 
     def new_candle_closed(self):
-
         pass
         #RSI_Trade01.calculate_trade(client = self.myClient.client, closes = self.closes)

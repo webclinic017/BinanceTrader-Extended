@@ -13,6 +13,7 @@ except Exception as e:
 
 my_btrader1 = btrader.bTrader(myClient=myClient, TRADE_SYMBOL=config.TRADE_SYMBOLS[0], TRADE_INTERVAL=config.TRADE_INTERVALS[0])
 
+
 #flask app 
 app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fix for not being able to find templates folder
 app.secret_key = config.Flask_Config.SECRET_KEY
