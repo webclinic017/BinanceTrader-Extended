@@ -7,3 +7,4 @@ backtrader
 Matplotlib #backtrader plotting support
 flask
 python-dotenv
+websockets

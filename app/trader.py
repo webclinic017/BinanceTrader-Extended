@@ -2,6 +2,7 @@ import websocket, json, pprint, talib, numpy
 from binance.client import Client
 from binance.enums import *
 import csv
+import backtrader as bt
 
 import config, RSI_Trade01, order_actions, khistory
 

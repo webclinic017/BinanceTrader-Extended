@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, flash, jsonify, Response, url_for, session
 from datetime import datetime
 
-import config, bclient, chart_actions
+import config, bclient, btrader, chart_actions, asyncio
 
 bconnection = False
 try:
@@ -11,7 +11,7 @@ except Exception as e:
     print(e)
 
 
-
+my_btrader1 = btrader.bTrader(myClient=myClient, TRADE_SYMBOL=config.TRADE_SYMBOLS[0], TRADE_INTERVAL=config.TRADE_INTERVALS[0])
 
 #flask app 
 app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fix for not being able to find templates folder
@@ -119,7 +119,7 @@ def bg_run_backtest():
     
     #download and save kline history as a csv file
     if(True): 
-        bclient.khistory.asyncio.run(bclient.khistory.download_khistory(myClient.client, config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
+        asyncio.run(bclient.khistory.download_khistory(myClient.client, config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
 
     csv_name = bclient.khistory.get_csv_name(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0])
     bclient.backtest.run1(csv_name, config.TRADE_INTERVALS[0])
