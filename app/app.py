@@ -26,9 +26,9 @@ def index():
 
     #display 1
     if "display1_trade_symbol" not in session:
-        session["display1_trade_symbol"] = str(config.TRADE_SYMBOLS[1])
+        session["display1_trade_symbol"] = str(config.TRADE_SYMBOLS[0])
     if "display1_trade_interval" not in session:
-        session["display1_trade_interval"] = str(config.TRADE_INTERVALS[1])
+        session["display1_trade_interval"] = str(config.TRADE_INTERVALS[0])
 
     display1_trade_symbol = session["display1_trade_symbol"]
     display1_trade_interval = session["display1_trade_interval"]
@@ -57,6 +57,7 @@ def index():
                            exc_trade_symbols = exc_trade_symbols, 
                            display1_trade_symbol=display1_trade_symbol,
                            display1_trade_interval = display1_trade_interval,
+                           url_history = url_for("history"),
                            backtest_message = backtest_message
                            )
 

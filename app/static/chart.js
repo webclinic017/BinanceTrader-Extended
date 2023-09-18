@@ -61,7 +61,8 @@ var candleSeries = chart.addCandlestickSeries({
 
 /* get past data from flask page*/
 /* trade parameters will be given to this link to get custom results in the future. Until then this link works with the first of the trade list values from .env*/
-fetch(`http://127.0.0.1:5000/history?TRADE_SYMBOL=${TRADE_SYMBOL}&TRADE_INTERVAL=${TRADE_INTERVAL}`)
+// `http://127.0.0.1:5000/history?TRADE_SYMBOL=${TRADE_SYMBOL}&TRADE_INTERVAL=${TRADE_INTERVAL}`
+fetch(`${url_history}?TRADE_SYMBOL=${TRADE_SYMBOL}&TRADE_INTERVAL=${TRADE_INTERVAL}`)
     .then((r) => r.json())
     .then((response) => {
         console.log(response)
