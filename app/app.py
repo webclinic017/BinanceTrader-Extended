@@ -23,9 +23,16 @@ app.secret_key = config.Flask_Config.SECRET_KEY
 def index():
     title = "Binance Trader"
 
+
     #display 1
-    display1_trade_symbol = config.TRADE_SYMBOLS[0]
-    display1_trade_interval = config.TRADE_INTERVALS[0]
+    if "display1_trade_symbol" not in session:
+        session["display1_trade_symbol"] = str(config.TRADE_SYMBOLS[1])
+    if "display1_trade_interval" not in session:
+        session["display1_trade_interval"] = str(config.TRADE_INTERVALS[1])
+
+    display1_trade_symbol = session["display1_trade_symbol"]
+    display1_trade_interval = session["display1_trade_interval"]
+
 
     #quick trade
     if bconnection:
@@ -43,8 +50,6 @@ def index():
         session.pop("backtest_message", None)
     
     print(backtest_message)
-
-
 
     return render_template("index.html", 
                            title = title, 
@@ -95,8 +100,11 @@ def settings():
 @app.route("/history")
 def history():
 
+    __TRADE_SYMBOL = request.args.get("TRADE_SYMBOL", default=config.TRADE_SYMBOLS[0], type=str)
+    __TRADE_INTERVAL = request.args.get("TRADE_INTERVAL", default=config.TRADE_INTERVALS[0], type=str)
+
     #candlesticks = myClient.client.get_historical_klines(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], "15 days")
-    candlesticks = myClient.client.get_klines(symbol = config.TRADE_SYMBOLS[0], interval = config.TRADE_INTERVALS[0])
+    candlesticks = myClient.client.get_klines(symbol = __TRADE_SYMBOL, interval = __TRADE_INTERVAL)
     p_klines = chart_actions.process_klineslist_to_chartdictformat(candlesticks)
     return(jsonify(p_klines))
 

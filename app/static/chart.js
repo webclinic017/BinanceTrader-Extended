@@ -1,7 +1,8 @@
 /* these values can be given dynamically in the future*/
-var TRADE_SYMBOL = "LTCUSDT"
-var TRADE_INTERVAL = "1m"
 
+//var TRADE_SYMBOL = "LTCUSDT"
+//var TRADE_INTERVAL = "1m"
+/* These variables are now exist in global-scope (in index.html)*/
 
 var chart = LightweightCharts.createChart(document.getElementById("chart"), {
     width: 1000,
@@ -60,7 +61,7 @@ var candleSeries = chart.addCandlestickSeries({
 
 /* get past data from flask page*/
 /* trade parameters will be given to this link to get custom results in the future. Until then this link works with the first of the trade list values from .env*/
-fetch('http://127.0.0.1:5000/history')
+fetch(`http://127.0.0.1:5000/history?TRADE_SYMBOL=${TRADE_SYMBOL}&TRADE_INTERVAL=${TRADE_INTERVAL}`)
     .then((r) => r.json())
     .then((response) => {
         console.log(response)
