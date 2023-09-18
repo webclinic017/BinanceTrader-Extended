@@ -46,12 +46,12 @@ class bTrader():
         self.print("a bTrader instance is initiated with {} starting values.".format(len(self.closes)))
 
     def print(self, msg : str):
-        print(str(self.TRADE_SYMBOL) + str(self.TRADE_INTERVAL) + str(msg))
+        print(str(self.TRADE_SYMBOL) + "-" + str(self.TRADE_INTERVAL) + ": " + str(msg))
 
 
     def start_websocket(self):
         
-
+        '''
         def on_open(ws):
             print("opened connection")
 
@@ -83,7 +83,7 @@ class bTrader():
                 print(len(self.closes))
 
                 self.new_candle_closed()
-
+        '''
         #Get updates from socket.
         #ws = websocket.WebSocketApp(self.SOCKET, on_open=on_open, on_close=on_close, on_message=on_message)
         #ws.run_forever()
@@ -99,13 +99,38 @@ class bTrader():
                 async with conn as ws: 
                     while True:
                         message = await ws.recv()
-                        self.print("message here")
-                        self.print(message)
+                        self.on_message(message)
 
             loop.run_until_complete(inner_websocket_loop())
 
         threading.Thread(target=websocket_loop).start()
 
+
+    def on_message(self, message):
+            
+        #global np_closes
+
+        self.print("received message")
+        json_message = json.loads(message)
+        #pprint.pprint(json_message)
+
+        #look-up the payload of the websocket stream on here https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md  
+        candle = json_message["k"]
+
+        is_candle_closed = candle['x']
+        price_closed = candle['c']
+        self.print(price_closed)
+        #initiate logic upon new candle information.
+        if is_candle_closed:
+            self.print("candle closed at {}".format(price_closed))
+            self.closes.append(float(price_closed))
+            print("closes")
+            self.print(self.closes)
+            print(len(self.closes))
+
+            self.new_candle_closed()
+
+
     def new_candle_closed(self):
-        pass
+        print("this should only triggers only once for every message on this instance")
         #RSI_Trade01.calculate_trade(client = self.myClient.client, closes = self.closes)
