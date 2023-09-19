@@ -11,8 +11,6 @@ except Exception as e:
     print(e)
 
 
-my_btrader1 = btrader.bTrader(myClient=myClient, TRADE_SYMBOL=config.TRADE_SYMBOLS[0], TRADE_INTERVAL=config.TRADE_INTERVALS[0])
-my_btrader2 = btrader.bTrader(myClient=myClient, TRADE_SYMBOL=config.TRADE_SYMBOLS[1], TRADE_INTERVAL=config.TRADE_INTERVALS[1])
 
 #flask app 
 app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fix for not being able to find templates folder
@@ -26,9 +24,9 @@ def index():
 
     #display 1
     if "display1_trade_symbol" not in session:
-        session["display1_trade_symbol"] = str(config.TRADE_SYMBOLS[0])
+        session["display1_trade_symbol"] = str(config.Trade_Info.TRADE_SYMBOLS[0])
     if "display1_trade_interval" not in session:
-        session["display1_trade_interval"] = str(config.TRADE_INTERVALS[0])
+        session["display1_trade_interval"] = str(config.Trade_Info.TRADE_INTERVALS[0])
 
     display1_trade_symbol = session["display1_trade_symbol"]
     display1_trade_interval = session["display1_trade_interval"]
@@ -101,10 +99,10 @@ def settings():
 @app.route("/history")
 def history():
 
-    __TRADE_SYMBOL = request.args.get("TRADE_SYMBOL", default=config.TRADE_SYMBOLS[0], type=str)
-    __TRADE_INTERVAL = request.args.get("TRADE_INTERVAL", default=config.TRADE_INTERVALS[0], type=str)
+    __TRADE_SYMBOL = request.args.get("TRADE_SYMBOL", default=config.Trade_Info.TRADE_SYMBOLS[0], type=str)
+    __TRADE_INTERVAL = request.args.get("TRADE_INTERVAL", default=config.Trade_Info.TRADE_INTERVALS[0], type=str)
 
-    #candlesticks = myClient.client.get_historical_klines(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], "15 days")
+    #candlesticks = myClient.client.get_historical_klines(config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0], "15 days")
     candlesticks = myClient.client.get_klines(symbol = __TRADE_SYMBOL, interval = __TRADE_INTERVAL)
     p_klines = chart_actions.process_klineslist_to_chartdictformat(candlesticks)
     return(jsonify(p_klines))
@@ -129,10 +127,10 @@ def bg_run_backtest():
     
     #download and save kline history as a csv file
     if(True): 
-        asyncio.run(bclient.khistory.download_khistory(myClient.client, config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0], DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
+        asyncio.run(bclient.khistory.download_khistory(myClient.client, config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0], DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
 
-    csv_name = bclient.khistory.get_csv_name(config.TRADE_SYMBOLS[0], config.TRADE_INTERVALS[0])
-    bclient.backtest.run1(csv_name, config.TRADE_INTERVALS[0])
+    csv_name = bclient.khistory.get_csv_name(config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0])
+    bclient.backtest.run1(csv_name, config.Trade_Info.TRADE_INTERVALS[0])
 
     session["backtest_message"] = "Success"
     return redirect(url_for("index"))

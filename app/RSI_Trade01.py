@@ -2,10 +2,11 @@ from binance.client import Client
 from binance.enums import *
 import numpy, talib
 
-from config import TRADE_SYMBOLS as TS
+from config import Trade_Info
 
 import order_actions
 
+TS = Trade_Info.TRADE_SYMBOLS
 
 # Set up these variables to your own liking.
 RSI_PERIOD = 14
