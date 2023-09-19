@@ -1,18 +1,13 @@
-import websocket, json, pprint, talib, numpy
+import json, pprint, talib, numpy
 from binance.client import Client
 from binance.enums import *
-import csv
-import config, RSI_Trade01, order_actions, khistory
+import bclient
 import asyncio, websockets, threading
 from typing import Callable
 
-#async def create_and_start_btrader(myClient, TRADE_SYMBOL, TRADE_INTERVAL):
-#    btrader = bTrader(myClient, TRADE_SYMBOL, TRADE_INTERVAL)
-#    asyncio.create_task(btrader.start_websocket())
-
 
 class bTrader():
-    def __init__(self, myClient, TRADE_SYMBOL, TRADE_INTERVAL):
+    def __init__(self, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str) -> None:
         self.myClient = myClient
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
@@ -21,8 +16,8 @@ class bTrader():
         self.init_closes()
 
         self.websocket_handler = WebSocketHandler(self.SOCKET, self.on_message, self.print)
-        #self.start_websocket()
-        
+        self.ws_running = False
+        #self.start()
         
 
     def init_closes(self):
@@ -35,25 +30,27 @@ class bTrader():
             self.closes.append(price_closed)
 
         self.print(self.closes) 
-        self.print("a bTrader instance is initiated with {} starting values.".format(len(self.closes)))
+        self.print(f"a bTrader instance is initiated with {len(self.closes)} starting values. Running: {self.ws_running}")
 
 
-    def print(self, msg : str):
+    def print(self, msg: str):
         print(str(self.TRADE_SYMBOL) + "-" + str(self.TRADE_INTERVAL) + ": " + str(msg))
 
 
     def start(self):
         self.websocket_handler.start()
+        self.ws_running = True
+        self.print("Started.")
 
 
     def stop(self):
         self.websocket_handler.stop()
+        self.ws_running = False
+        self.print("Stopped.")
 
 
-    def on_message(self, message):
+    def on_message(self, message: str):
             
-        #global np_closes
-
         self.print("received message")
         json_message = json.loads(message)
         #pprint.pprint(json_message)
@@ -68,9 +65,9 @@ class bTrader():
         if is_candle_closed:
             self.print("candle closed at {}".format(price_closed))
             self.closes.append(float(price_closed))
-            print("closes")
+            self.print("closes")
             self.print(self.closes)
-            print(len(self.closes))
+            self.print(len(self.closes))
 
             self.new_candle_closed()
 
@@ -81,7 +78,7 @@ class bTrader():
 
 
 class WebSocketHandler:
-    def __init__(self, SOCKET : str, on_message : Callable[[str], None], report_error_str: Callable[[str], None]) -> None:
+    def __init__(self, SOCKET: str, on_message: Callable[[str], None], report_error_str: Callable[[str], None]) -> None:
         self.SOCKET = SOCKET
         self.on_message = on_message
         self.report_error_str = report_error_str
