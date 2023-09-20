@@ -40,7 +40,7 @@ The Program is running a Flask application with user-friendly UI and has a quick
 ## Usage
 
 
-1. **Environment Setup:** 2- Create your `.env` file at `./app/.env` with your API keys using `./app/.env.template`. 
+1. **Environment Setup:** Create your `.env` file at `./app/.env` with your API keys using `./app/.env.template`. 
 
 2. **Run The Program:** Go to the `./app` folder and run `main.py`. A flask application will start and you can visit the url in your browser.
 
