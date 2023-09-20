@@ -1,19 +1,10 @@
 import backtrader as bt
+import TradeStrategies
 #import Matplotlib
 
-class RSIStrategy(bt.Strategy):
 
-    def __init__(self):
-        self.rsi = bt.talib.RSI(self.data, period=14)
 
-    def next(self):
-        if self.rsi < 30 and not self.position:
-            self.buy(size=1)
-        
-        if self.rsi > 70 and self.position:
-            self.close()
-
-def run1(csv_name, TRADE_INTERVAL):
+def run1(csv_name: str, TRADE_INTERVAL: str):
     data_compression :int
     data_timeframestr :str
     data_timeframe = bt.TimeFrame.Minutes
@@ -37,7 +28,7 @@ def run1(csv_name, TRADE_INTERVAL):
     data = bt.feeds.GenericCSVData(dataname = csv_name, dtformat = 2, compression = data_compression, timeframe = data_timeframe)
     cerebro.adddata(data)
 
-    cerebro.addstrategy(RSIStrategy)
+    cerebro.addstrategy(TradeStrategies.rsi_strategy)
 
     cerebro.run()
     cerebro.plot()

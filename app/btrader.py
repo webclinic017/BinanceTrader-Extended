@@ -4,13 +4,16 @@ from binance.enums import *
 import bclient
 import asyncio, websockets, threading
 from typing import Callable
+from backtrader import Strategy
+import TradeStrategies.strategy_manager as s_manager
 
 
 class bTrader():
-    def __init__(self, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str) -> None:
+    def __init__(self, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str, strategy_str = "rsi_strategy01") -> None:
         self.myClient = myClient
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
+        self.strategy = s_manager.get_strategy(strategy_str)
         
         self.SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
         self.init_closes()
@@ -75,6 +78,14 @@ class bTrader():
     def new_candle_closed(self):
         print("this should only triggers only once for every message on this instance")
         #RSI_Trade01.calculate_trade(client = self.myClient.client, closes = self.closes)
+
+
+    def buy_signal(self):
+        self.print("buy signal received.")
+
+
+    def close_signal(self):
+        self.print("close signal received.")
 
 
 class WebSocketHandler:
