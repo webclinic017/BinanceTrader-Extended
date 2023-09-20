@@ -13,7 +13,7 @@ class bTrader():
         self.myClient = myClient
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
-        self.strategy = s_manager.get_strategy(strategy_str)
+        self.strategy = s_manager.get_strategy_live(strategy_str, report_info= self.print, trade_action= self.trade_action)
         
         self.SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
         self.init_closes()
@@ -60,7 +60,6 @@ class bTrader():
 
         #look-up the payload of the websocket stream on here https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md  
         candle = json_message["k"]
-
         is_candle_closed = candle['x']
         price_closed = candle['c']
         self.print(price_closed)
@@ -76,17 +75,17 @@ class bTrader():
 
 
     def new_candle_closed(self):
-        print("this should only triggers only once for every message on this instance")
+        self.strategy.calculate_order(closes=self.closes)
         #RSI_Trade01.calculate_trade(client = self.myClient.client, closes = self.closes)
 
 
-    def buy_signal(self):
-        self.print("buy signal received.")
-
-
-    def close_signal(self):
-        self.print("close signal received.")
-
+    def trade_action(self, side: str, quantity = "0.2", isPercentage = "N"):
+        self.print(f"order signal received. side: {side}, quantity: {quantity}")
+        isPercentage = "N"
+        #This is the place to calculate quantity over orders with a percentage of the total asset in the future. Not yet implemented
+        
+        self.myClient.fill_order(trade_symbol= self.TRADE_SYMBOL, side_order= side, use_trade_percentage= isPercentage, trade_quantity= quantity)
+        
 
 class WebSocketHandler:
     def __init__(self, SOCKET: str, on_message: Callable[[str], None], report_error_str: Callable[[str], None]) -> None:

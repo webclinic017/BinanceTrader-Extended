@@ -1,9 +1,9 @@
+from typing import Callable
 import backtrader as bt
 from strategy_manager import bStrategy
 
-class RSIStrategy01(bStrategy):
+class Backtest(bt.Strategy):
     def __init__(self):
-        super.__init__(self)
         self.rsi = bt.talib.RSI(self.data, period=14)
 
 
@@ -15,10 +15,7 @@ class RSIStrategy01(bStrategy):
             self.close()
 
 
-    def update_data(self, new_close):
-        self.data.append(new_close)
-        #trigger next
-
-    
-    def set_data(self, data):
-        self.data = data
+class Live(bStrategy):
+    def __init__(self, report_info: Callable[[str], None], trade_action: Callable[[str], None]):
+        super().__init__(report_info, trade_action)
+    pass

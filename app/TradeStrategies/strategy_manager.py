@@ -2,39 +2,32 @@ import backtrader as bt
 from TradeStrategies import *
 import TradeStrategies.rsi_strategy01 as rsi_strategy01
 from typing import Callable
+from bclient import MyClient
 
 
-class bStrategy(bt.Strategy):
-    def __init__(self, b_buy_signal: Callable[[], None], b_close_signal: Callable[[], None], b_backtest = False):
-        self.b_backtest = b_backtest
-        self.b_buy_signal = b_buy_signal
-        self.b_close_signal = b_close_signal
+
+class bStrategy():
+    def __init__(self, report_info: Callable[[str], None] , trade_action: Callable[[str], None]):
+        self.trade_action = trade_action
+        self.report_info = report_info
     #     self.rsi = bt.talib.RSI(self.data, period=14)
 
-
-    # def next(self):
-    #     if self.rsi < 30 and not self.position:
-    #         self.buy(size=1)
-        
-    #     if self.rsi > 70 and self.position:
-    #         self.close()
-
-
-    def b_update_data(self, new_close):
-        self.data.append(new_close)
+    def calculate_order(self, closes):
+        pass
         #trigger next
-
-    
-    def b_set_data(self, data):
-        self.data = data
         
 
-def get_strategy(strategy_str: str, b_backtest = False) -> bStrategy:
+def get_strategy_bt(strategy_str: str) -> bt.Strategy:
+    my_ts = rsi_strategy01.Backtest()
     if strategy_str == "rsi_strategy01":
-        my_ts = rsi_strategy01.RSIStrategy01(b_backtest = b_backtest)
-    #other strategies goes here with an elif block
-    else:
-        my_ts = rsi_strategy01.RSIStrategy01(b_backtest = b_backtest)
-
+        my_ts = rsi_strategy01.Backtest()
+    #other strategies goes here with an if block
     return my_ts
 
+
+def get_strategy_live(strategy_str: str, report_info: Callable[[str], None], trade_action: Callable[[str], None]) -> bStrategy:
+    my_ts = rsi_strategy01.Live(report_info=report_info, trade_action=trade_action)
+    if strategy_str == "rsi_strategy01":
+        my_ts = rsi_strategy01.Live(report_info=report_info, trade_action=trade_action)
+    #other strategies goes here with an if block    
+    return my_ts

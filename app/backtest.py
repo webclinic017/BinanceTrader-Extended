@@ -1,10 +1,10 @@
 import backtrader as bt
-import TradeStrategies
+import TradeStrategies.strategy_manager as sm
 #import Matplotlib
 
 
 
-def run1(csv_name: str, TRADE_INTERVAL: str):
+def run1(csv_name: str, TRADE_INTERVAL: str, strategy_str = "rsi_strategy01"):
     data_compression :int
     data_timeframestr :str
     data_timeframe = bt.TimeFrame.Minutes
@@ -27,8 +27,8 @@ def run1(csv_name: str, TRADE_INTERVAL: str):
     cerebro = bt.Cerebro()
     data = bt.feeds.GenericCSVData(dataname = csv_name, dtformat = 2, compression = data_compression, timeframe = data_timeframe)
     cerebro.adddata(data)
-
-    cerebro.addstrategy(TradeStrategies.rsi_strategy)
+    my_strategy = sm.get_strategy_bt(strategy_str=strategy_str)
+    cerebro.addstrategy(my_strategy)
 
     cerebro.run()
     cerebro.plot()
