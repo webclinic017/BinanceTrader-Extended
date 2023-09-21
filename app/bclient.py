@@ -1,7 +1,7 @@
 from binance.client import Client
 from binance.enums import *
 
-import config, RSI_Trade01, order_actions, khistory, backtest
+import config
 
 
 class MyClient():

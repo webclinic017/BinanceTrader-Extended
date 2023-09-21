@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, flash, jsonify, Response, url_for, session
 from datetime import datetime
 
-import config, bclient, btrader, chart_actions, asyncio, btmanager
+import config, bclient, khistory, btrader, chart_actions, asyncio, btmanager
 
 bconnection = False
 try:
@@ -16,7 +16,7 @@ print(type(config.Trade_Info.TRADE_BOTS[0]))
 print(type(config.Trade_Info.TRADE_BOTS[1]["ALLOCATED_TRADE_QUANTITY"]))
 print(config.Trade_Info.TRADE_BOTS[1]["ALLOCATED_TRADE_QUANTITY"])
 
-if False:
+if True:
     my_btmanager = btmanager.BTManager(myClient=myClient)
     my_btmanager.create_traders_from_env()
     my_btmanager.start_all_traders()
@@ -33,9 +33,11 @@ def index():
 
     #display 1
     if "display1_trade_symbol" not in session:
-        session["display1_trade_symbol"] = str(config.Trade_Info.TRADE_SYMBOLS[0])
+        session["display1_trade_symbol"] = str(config.Trade_Info.DEFAULT_SYMBOL)
     if "display1_trade_interval" not in session:
-        session["display1_trade_interval"] = str(config.Trade_Info.TRADE_INTERVALS[0])
+        session["display1_trade_interval"] = str(config.Trade_Info.DEFAULT_INTERVAL)
+    if "display1_trade_strat" not in session:
+        session["display1_trade_strat"] = str(config.Trade_Info.DEFAULT_STRAT)
 
     display1_trade_symbol = session["display1_trade_symbol"]
     display1_trade_interval = session["display1_trade_interval"]
@@ -108,8 +110,8 @@ def settings():
 @app.route("/history")
 def history():
 
-    __TRADE_SYMBOL = request.args.get("TRADE_SYMBOL", default=config.Trade_Info.TRADE_SYMBOLS[0], type=str)
-    __TRADE_INTERVAL = request.args.get("TRADE_INTERVAL", default=config.Trade_Info.TRADE_INTERVALS[0], type=str)
+    __TRADE_SYMBOL = request.args.get("TRADE_SYMBOL", default=config.Trade_Info.DEFAULT_SYMBOL, type=str)
+    __TRADE_INTERVAL = request.args.get("TRADE_INTERVAL", default=config.Trade_Info.DEFAULT_INTERVAL, type=str)
 
     #candlesticks = myClient.client.get_historical_klines(config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0], "15 days")
     candlesticks = myClient.client.get_klines(symbol = __TRADE_SYMBOL, interval = __TRADE_INTERVAL)
@@ -134,12 +136,24 @@ def bg_run_backtest():
         session["backtest_message"] = "backtest Failed - Wrong Dates"
         return redirect(url_for("index"))
     
+
+    #set up symbol and interval
+    if "display1_trade_symbol" not in session:
+        session["display1_trade_symbol"] = str(config.Trade_Info.DEFAULT_SYMBOL)
+    if "display1_trade_interval" not in session:
+        session["display1_trade_interval"] = str(config.Trade_Info.DEFAULT_INTERVAL)
+    if "display1_trade_strat" not in session:
+        session["display1_trade_strat"] = str(config.Trade_Info.DEFAULT_STRAT)
+
+    display1_trade_symbol = session["display1_trade_symbol"]
+    display1_trade_interval = session["display1_trade_interval"]
+    display1_trade_strat = session["display1_trade_strat"]
     #download and save kline history as a csv file
     if(True): 
-        asyncio.run(bclient.khistory.download_khistory(myClient.client, config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0], DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
+        asyncio.run(khistory.download_khistory(myClient.client, display1_trade_symbol, display1_trade_interval, DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
 
-    csv_name = bclient.khistory.get_csv_name(config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0])
-    bclient.backtest.run1(csv_name, config.Trade_Info.TRADE_INTERVALS[0], strategy_str=config.Trade_Info.TRADE_STRATS[0])
+    csv_name = khistory.get_csv_name(display1_trade_symbol, display1_trade_interval)
+    bclient.backtest.run1(csv_name, display1_trade_interval, strategy_str=display1_trade_strat)
 
     session["backtest_message"] = "Success"
     return redirect(url_for("index"))

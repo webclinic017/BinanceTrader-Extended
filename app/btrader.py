@@ -15,13 +15,16 @@ class bTrader():
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
         self.ALLOCATED_TRADE_QUANTITY = ALLOCATED_TRADE_QUANTITY
+        
         self.strategy = s_manager.get_strategy_live(strategy_str, report_info= self.print, trade_action= self.trade_action)
         
+        self.ws_running = False
         self.SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
         self.init_closes()
 
+        
         self.websocket_handler = WebSocketHandler(self.SOCKET, self.on_message, self.print)
-        self.ws_running = False
+        
         #self.start()
         
 
