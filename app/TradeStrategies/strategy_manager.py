@@ -1,21 +1,14 @@
 import backtrader as bt
-from TradeStrategies import *
+#from TradeStrategies import *
+from .bstrategy import bStrategy
 import TradeStrategies.rsi_strategy01 as rsi_strategy01
+
 from typing import Callable
-from bclient import MyClient
-from ..config import Strategies 
+#from bclient import MyClient
+from config import Strategies 
 
 
 
-class bStrategy():
-    def __init__(self, report_info: Callable[[str], None] , trade_action: Callable[[str, float, bool], None]):
-        self.trade_action = trade_action
-        self.report_info = report_info
-    #     self.rsi = bt.talib.RSI(self.data, period=14)
-
-    def calculate_order(self, closes):
-        self.report_info("default calculate_order function of bStrategy.")
-        
 
 def get_strategy_bt(strategy_str: str) -> bt.Strategy:
     my_ts = rsi_strategy01.Backtest()

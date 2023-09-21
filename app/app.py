@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, flash, jsonify, Response, url_for, session
 from datetime import datetime
 
-import config, bclient, btrader, chart_actions, asyncio
+import config, bclient, btrader, chart_actions, asyncio, btmanager
 
 bconnection = False
 try:
@@ -10,7 +10,12 @@ try:
 except Exception as e:
     print(e)
 
+print(config.Trade_Info.TRADE_BOTS)
 
+if False:
+    my_btmanager = btmanager.BTManager(myClient=myClient)
+    my_btmanager.create_traders_from_env()
+    my_btmanager.start_all_traders()
 
 #flask app 
 app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fix for not being able to find templates folder
@@ -130,7 +135,7 @@ def bg_run_backtest():
         asyncio.run(bclient.khistory.download_khistory(myClient.client, config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0], DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
 
     csv_name = bclient.khistory.get_csv_name(config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0])
-    bclient.backtest.run1(csv_name, config.Trade_Info.TRADE_INTERVALS[0])
+    bclient.backtest.run1(csv_name, config.Trade_Info.TRADE_INTERVALS[0], strategy_str=config.Trade_Info.TRADE_STRATS[0])
 
     session["backtest_message"] = "Success"
     return redirect(url_for("index"))

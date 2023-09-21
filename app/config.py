@@ -1,6 +1,7 @@
 from dotenv import load_dotenv, dotenv_values 
 from pathlib import Path
 import os, json
+import ast
 
 dotenv_path = Path(__file__).with_name('.env') #path to .env file
 
@@ -18,6 +19,8 @@ class Trade_Info:
     DEFAULT_SYMBOL = "LTCUSDT"
     DEFAULT_INTERVAL = "15m"
     DEFAULT_STRAT = "rsi_strategy01"
+
+    TRADE_BOTS = ast.literal_eval(os.getenv("TRADE_BOTS"))
 
 class Binance_Config:
     # Set Binance API Keys

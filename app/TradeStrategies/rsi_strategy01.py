@@ -1,5 +1,5 @@
 from typing import Callable
-from strategy_manager import bStrategy
+from .bstrategy import bStrategy
 
 import backtrader as bt
 

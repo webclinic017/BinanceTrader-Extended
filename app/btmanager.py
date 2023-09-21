@@ -1,5 +1,5 @@
 import bclient, btrader
-from .config import Strategies, Trade_Info
+from config import Strategies, Trade_Info
 
 
 class BTManager():
@@ -18,15 +18,24 @@ class BTManager():
 
 
 
-    def create_trader(self, TRADE_SYMBOL: str, TRADE_INTERVAL: str, TRADE_STRAT: str) -> int:
+    def create_trader(self, TRADE_SYMBOL: str, TRADE_INTERVAL: str, ALLOCATED_TRADE_QUANTITY: float, TRADE_STRAT: str) -> int:
         try:
-            self.myTraders.append(btrader.bTrader(trader_id=self.next_trader_id, myClient=self.myClient, TRADE_SYMBOL=TRADE_SYMBOL, TRADE_INTERVAL=TRADE_INTERVAL, strategy_str=TRADE_STRAT))
+            self.myTraders.append(
+                btrader.bTrader(
+                    trader_id=self.next_trader_id, 
+                    myClient=self.myClient, 
+                    TRADE_SYMBOL=TRADE_SYMBOL, 
+                    TRADE_INTERVAL=TRADE_INTERVAL, 
+                    ALLOCATED_TRADE_QUANTITY=ALLOCATED_TRADE_QUANTITY, 
+                    strategy_str=TRADE_STRAT
+                    ))
         
             index = self.next_trader_id #len(self.myTraders) - 1
             self.myTraders_info[str(index)] = dict({
                 "TRADE_SYMBOL" : TRADE_SYMBOL,
                 "TRADE_INTERVAL" : TRADE_INTERVAL,
                 "TRADE_STRAT" : TRADE_STRAT,
+                "ALLOCATED_TRADE_QUANTITY" : ALLOCATED_TRADE_QUANTITY,
                 "Running" : False
 
             })
