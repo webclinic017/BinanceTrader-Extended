@@ -20,7 +20,7 @@ class Backtest(bt.Strategy):
 
 
 class Live(bStrategy):
-    def __init__(self, report_info: Callable[[str], None], trade_action: Callable[[str, float, bool], None]):
+    def __init__(self, report_info: Callable[[str], None], trade_action: Callable[[str, float, bool], bool]):
         super().__init__(report_info, trade_action)
 
         self.RSI_PERIOD = 14
