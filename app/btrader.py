@@ -9,11 +9,12 @@ import TradeStrategies.strategy_manager as s_manager
 
 
 class bTrader():
-    def __init__(self, trader_id: int, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str, strategy_str = "rsi_strategy01") -> None:
+    def __init__(self, trader_id: int, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str, ALLOCATED_TRADE_QUANTITY: float, strategy_str = "rsi_strategy01", ) -> None:
         self.trader_id = trader_id
         self.myClient = myClient
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
+        self.ALLOCATED_TRADE_QUANTITY = ALLOCATED_TRADE_QUANTITY
         self.strategy = s_manager.get_strategy_live(strategy_str, report_info= self.print, trade_action= self.trade_action)
         
         self.SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
@@ -80,12 +81,14 @@ class bTrader():
         #RSI_Trade01.calculate_trade(client = self.myClient.client, closes = self.closes)
 
 
-    def trade_action(self, side: str, quantity = "0.2", isPercentage = "N"):
-        self.print(f"order signal received. side: {side}, quantity: {quantity}")
-        isPercentage = "N"
-        #This is the place to calculate quantity over orders with a percentage of the total asset in the future. Not yet implemented
+    def trade_action(self, side: str, quantity = 1.0, is_asset_percentage = False):
         
-        self.myClient.fill_order(trade_symbol= self.TRADE_SYMBOL, side_order= side, use_trade_percentage= isPercentage, trade_quantity= quantity)
+        
+        #This is the place to calculate quantity over orders with a percentage of the total asset in the future. Not yet implemented
+        final_quantity = float(quantity) * float(self.ALLOCATED_TRADE_QUANTITY)
+
+        self.print(f"order signal received. side: {side}, strategy quantity: {quantity}, final quantity: {final_quantity}")
+        self.myClient.fill_order(trade_symbol= self.TRADE_SYMBOL, side_order= side, use_asset_percentage= is_asset_percentage, trade_quantity= final_quantity)
         
 
 class WebSocketHandler:

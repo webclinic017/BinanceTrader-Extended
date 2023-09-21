@@ -9,24 +9,24 @@ class MyClient():
     def __init__(self, BinanceConfig :config.Binance_Config):
         self.BinanceConfig = BinanceConfig
         #tld: "us" for usa based IP and "com" for global.
-        self.client = Client(BinanceConfig.BINANCE_API_KEY, BinanceConfig.BINANCE_API_SECRET, tld="com")
+        self.client = Client(BinanceConfig.BINANCE_API_KEY, BinanceConfig.BINANCE_API_SECRET, tld=BinanceConfig.BINANCE_CLIENT_TLD)
 
 
     def printAPI(self):
         print(self.BinanceConfig.BINANCE_API_KEY)
 
 
-    def fill_order(self, trade_symbol : str, side_order : str, use_trade_percentage : str, trade_quantity : float, order_type=ORDER_TYPE_MARKET):
+    def fill_order(self, trade_symbol : str, side_order : str, use_asset_percentage : bool, trade_quantity : float, order_type=ORDER_TYPE_MARKET):
         
         
         try:
-            print("use custom trade percentage: {}.".format(use_trade_percentage))
-            if use_trade_percentage == "N":
-                print("sending order. {}, {}, {}, {}, {}".format(trade_symbol, side_order, use_trade_percentage, trade_quantity, order_type))
+            print("use custom trade percentage: {}.".format(use_asset_percentage))
+            if use_asset_percentage == False:
+                print("sending order. {}, {}, {}, {}, {}".format(trade_symbol, side_order, use_asset_percentage, trade_quantity, order_type))
                 order = self.client.create_order(symbol = trade_symbol, side=side_order, type=order_type, quantity = trade_quantity)
                 print(order)
 
-            if use_trade_percentage == "Y":
+            if use_asset_percentage == True:
                 print("custom trade percentage is not defined yet")
                 pass #get total amount of currency and make %90 quantity
         except Exception as e:

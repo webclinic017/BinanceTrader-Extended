@@ -70,7 +70,7 @@ def quicktrade():
     if request.form['trade_action'] == "sell":
         t_action = "SELL"
 
-    q_trade_result = myClient.fill_order( request.form['trade_symbol'], t_action, "N", request.form["trade_quantity"])
+    q_trade_result = myClient.fill_order( request.form['trade_symbol'], t_action, False, request.form["trade_quantity"])
     
     if q_trade_result != True:
         flash("Quick Trade Failed: " + q_trade_result.message, "error")

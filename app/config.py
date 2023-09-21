@@ -23,6 +23,8 @@ class Binance_Config:
     # Set Binance API Keys
     BINANCE_API_KEY = os.getenv("BINANCE_API_KEY")
     BINANCE_API_SECRET = os.getenv("BINANCE_API_SECRET")
+    #tld: "us" for usa based IP and "com" for global.
+    BINANCE_CLIENT_TLD = "com"
 
 
 class Flask_Config:
