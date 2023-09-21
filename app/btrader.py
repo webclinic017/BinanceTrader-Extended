@@ -86,14 +86,15 @@ class bTrader():
         #RSI_Trade01.calculate_trade(client = self.myClient.client, closes = self.closes)
 
 
-    def trade_action(self, side: str, quantity = 1.0, is_asset_percentage = False):
+    def trade_action(self, side: str, quantity = 1.0, is_asset_percentage = False) -> bool:
         
         
         #This is the place to calculate quantity over orders with a percentage of the total asset in the future. Not yet implemented
         final_quantity = float(quantity) * float(self.ALLOCATED_TRADE_QUANTITY)
 
         self.print(f"order signal received. side: {side}, strategy quantity: {quantity}, final quantity: {final_quantity}")
-        self.myClient.fill_order(trade_symbol= self.TRADE_SYMBOL, side_order= side, use_asset_percentage= is_asset_percentage, trade_quantity= final_quantity)
+        order_success = self.myClient.fill_order(trade_symbol= self.TRADE_SYMBOL, side_order= side, use_asset_percentage= is_asset_percentage, trade_quantity= final_quantity)
+        return order_success
         
 
 class WebSocketHandler:
