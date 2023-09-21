@@ -11,11 +11,11 @@ from config import Strategies
 
 
 def get_strategy_bt(strategy_str: str) -> bt.Strategy:
-    my_ts = rsi_strategy01.Backtest()
+    sclass = rsi_strategy01.Backtest
     if strategy_str == Strategies.B_STRATS[0]: #"rsi_strategy01"
-        my_ts = rsi_strategy01.Backtest()
+        sclass = rsi_strategy01.Backtest
     #other strategies goes here with an if block
-    return my_ts
+    return sclass
 
 
 def get_strategy_live(strategy_str: str, report_info: Callable[[str], None], trade_action: Callable[[str], None]) -> bStrategy:

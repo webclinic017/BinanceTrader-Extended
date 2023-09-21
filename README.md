@@ -1,6 +1,5 @@
 # BinanceTrader-Extended
 
-
 ## Overview
 
 This project uses Binance API to trade crypto in real-time using technical analysis. And gives the option to backtest the strategies using [backtrader](https://github.com/mementum/backtrader). It also supports the development of new trading strategies.
@@ -18,33 +17,33 @@ The Program is running a Flask application with user-friendly UI and has a quick
 
 ## Installation
 
-
-
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/BeratDM/BinanceTrader-Extended.git
    cd BinanceTrader-Extended
    ```
 
 2. Set up a virtual environment (optional but recommended):
+
    ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. Install the required Python packages:
+
    ```bash
    pip install -r requirements.txt
    ```
 
 ## Usage
 
-
-1. **Environment Setup:** Create your `.env` file at `./app/.env` with your API keys using `./app/.env.template`. 
+1. **Environment Setup:** Create your `.env` file at `./app/.env` with your API keys using `./app/.env.template`.
 
 2. **Run The Program:** Go to the `./app` folder and run `main.py`. A flask application will start and you can visit the url in your browser.
 
-3. **Strategy Development:** New trading strategies can be developed inside the `TradeStrategies` folder by making a new Python file for your strategy and creating two classes, one for backtesting subclassing the `backtrader.Strategy` class, and the other for live trading subclassing the `bStrategy` class. After that, edit the `TradeStrategies/strategy_manager.py` to reference your classes.
+3. **Strategy Development:** New trading strategies can be developed inside the `TradeStrategies` folder by making a new Python file for your strategy and creating two classes, one for backtesting subclassing the `backtrader.Strategy` class, and the other for live trading subclassing the `bStrategy` class. After that, edit the `TradeStrategies/strategy_manager.py` and your `.env` files similarly to the examples to reference your classes.
 
 ---
 

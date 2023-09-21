@@ -27,8 +27,8 @@ def run1(csv_name: str, TRADE_INTERVAL: str, strategy_str = "rsi_strategy01"):
     cerebro = bt.Cerebro()
     data = bt.feeds.GenericCSVData(dataname = csv_name, dtformat = 2, compression = data_compression, timeframe = data_timeframe)
     cerebro.adddata(data)
-    my_strategy = sm.get_strategy_bt(strategy_str=strategy_str)
-    cerebro.addstrategy(my_strategy)
+    #print(type(sm.get_strategy_bt(strategy_str=strategy_str)))
+    cerebro.addstrategy(sm.get_strategy_bt(strategy_str=strategy_str))
 
     cerebro.run()
     cerebro.plot()

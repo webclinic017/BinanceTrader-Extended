@@ -1,7 +1,7 @@
 from flask import Flask, render_template, redirect, request, flash, jsonify, Response, url_for, session
 from datetime import datetime
 
-import config, bclient, khistory, btrader, chart_actions, asyncio, btmanager
+import config, bclient, khistory, backtest, btrader, chart_actions, asyncio, btmanager
 
 bconnection = False
 try:
@@ -95,8 +95,9 @@ def debug1():
     global my_btmanager
     
     my_btmanager.create_traders_from_env()
-    my_btmanager.create_trader("BTCUSDT", "5m", 0.00003, config.Trade_Info.DEFAULT_STRAT)
-    
+    my_btmanager.start_all_traders()
+
+
     return "debug01"
 
 
@@ -107,7 +108,7 @@ def debug2():
     #ti = my_btmanager.create_trader("BTCUSDT", "5m", 0.00003, config.Trade_Info.DEFAULT_STRAT)
     #my_btmanager.start_trader(ti)
 
-    my_btmanager.start_all_traders()
+    
     #my_btmanager.start_trader(0)
     return "debug01"
 
@@ -120,7 +121,7 @@ def debug3():
     #my_btmanager.start_trader(ti)
 
     #my_btmanager.start_all_traders()
-    my_btmanager.start_trader(1)
+    #my_btmanager.start_trader(1)
     return "debug03"
 
 
@@ -186,7 +187,7 @@ def bg_run_backtest():
         asyncio.run(khistory.download_khistory(myClient.client, display1_trade_symbol, display1_trade_interval, DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
 
     csv_name = khistory.get_csv_name(display1_trade_symbol, display1_trade_interval)
-    bclient.backtest.run1(csv_name, display1_trade_interval, strategy_str=display1_trade_strat)
+    backtest.run1(csv_name, display1_trade_interval, strategy_str=display1_trade_strat)
 
     session["backtest_message"] = "Success"
     return redirect(url_for("index"))
