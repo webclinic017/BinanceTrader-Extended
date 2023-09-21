@@ -1,6 +1,6 @@
 import backtrader as bt
 #from TradeStrategies import *
-from .bstrategy import bStrategy
+from TradeStrategies.bstrategy import bStrategy
 import TradeStrategies.rsi_strategy01 as rsi_strategy01
 
 from typing import Callable
@@ -14,7 +14,7 @@ def get_strategy_bt(strategy_str: str) -> bt.Strategy:
     sclass = rsi_strategy01.Backtest
     if strategy_str == Strategies.B_STRATS[0]: #"rsi_strategy01"
         sclass = rsi_strategy01.Backtest
-    #other strategies goes here with an if block
+    #other strategies will go here with an if block
     return sclass
 
 
@@ -22,5 +22,5 @@ def get_strategy_live(strategy_str: str, report_info: Callable[[str], None], tra
     my_ts = rsi_strategy01.Live(report_info=report_info, trade_action=trade_action)
     if strategy_str == Strategies.B_STRATS[0]: #"rsi_strategy01"
         my_ts = rsi_strategy01.Live(report_info=report_info, trade_action=trade_action)
-    #other strategies goes here with an if block    
+    #other strategies will go here with an if block    
     return my_ts
