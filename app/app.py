@@ -11,6 +11,10 @@ except Exception as e:
     print(e)
 
 print(config.Trade_Info.TRADE_BOTS)
+print(type(config.Trade_Info.TRADE_BOTS))
+print(type(config.Trade_Info.TRADE_BOTS[0]))
+print(type(config.Trade_Info.TRADE_BOTS[1]["ALLOCATED_TRADE_QUANTITY"]))
+print(config.Trade_Info.TRADE_BOTS[1]["ALLOCATED_TRADE_QUANTITY"])
 
 if False:
     my_btmanager = btmanager.BTManager(myClient=myClient)
