@@ -1,5 +1,6 @@
 import bclient, btrader
 from config import Strategies, Trade_Info
+import time
 
 
 class BTManager():
@@ -12,8 +13,9 @@ class BTManager():
         self.myTraders_info = {}
 
         try:
-            self.create_traders_from_env()
-            self.start_all_traders()
+            #self.create_traders_from_env()
+            #self.start_all_traders()
+            pass
         except Exception as e:
             print(e)
 
@@ -45,6 +47,7 @@ class BTManager():
             print(e)    
         self.next_trader_id += 1
 
+        
         return index
 
 
@@ -53,6 +56,7 @@ class BTManager():
         if self.myTraders[index] is not None:
             self.myTraders[index].start()
             self.myTraders_info[str(index)]["Running"] = True
+            time.sleep(1)
 
 
 

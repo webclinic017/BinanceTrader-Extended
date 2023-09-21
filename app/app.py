@@ -13,13 +13,12 @@ except Exception as e:
 print(config.Trade_Info.TRADE_BOTS)
 print(type(config.Trade_Info.TRADE_BOTS))
 print(type(config.Trade_Info.TRADE_BOTS[0]))
-print(type(config.Trade_Info.TRADE_BOTS[1]["ALLOCATED_TRADE_QUANTITY"]))
-print(config.Trade_Info.TRADE_BOTS[1]["ALLOCATED_TRADE_QUANTITY"])
+print(type(config.Trade_Info.TRADE_BOTS[0]["ALLOCATED_TRADE_QUANTITY"]))
+print(config.Trade_Info.TRADE_BOTS[0]["ALLOCATED_TRADE_QUANTITY"])
 
 if True:
     my_btmanager = btmanager.BTManager(myClient=myClient)
-    my_btmanager.create_traders_from_env()
-    my_btmanager.start_all_traders()
+    
 
 #flask app 
 app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fix for not being able to find templates folder
@@ -29,7 +28,7 @@ app.secret_key = config.Flask_Config.SECRET_KEY
 @app.route("/")
 def index():
     title = "Binance Trader"
-
+    
 
     #display 1
     if "display1_trade_symbol" not in session:
@@ -89,6 +88,40 @@ def quicktrade():
         flash("Quick Trade Successful", "message")
     
     return redirect("/")
+
+
+@app.route("/debug/")
+def debug1():
+    global my_btmanager
+    
+    my_btmanager.create_traders_from_env()
+    my_btmanager.create_trader("BTCUSDT", "5m", 0.00003, config.Trade_Info.DEFAULT_STRAT)
+    
+    return "debug01"
+
+
+@app.route("/debug2/")
+def debug2():
+    global my_btmanager
+    
+    #ti = my_btmanager.create_trader("BTCUSDT", "5m", 0.00003, config.Trade_Info.DEFAULT_STRAT)
+    #my_btmanager.start_trader(ti)
+
+    my_btmanager.start_all_traders()
+    #my_btmanager.start_trader(0)
+    return "debug01"
+
+
+@app.route("/debug3/")
+def debug3():
+    global my_btmanager
+    
+    #ti = my_btmanager.create_trader("BTCUSDT", "5m", 0.00003, config.Trade_Info.DEFAULT_STRAT)
+    #my_btmanager.start_trader(ti)
+
+    #my_btmanager.start_all_traders()
+    my_btmanager.start_trader(1)
+    return "debug03"
 
 
 @app.route("/buy/", methods = ["POST"])

@@ -17,7 +17,7 @@ class bTrader():
         self.ALLOCATED_TRADE_QUANTITY = ALLOCATED_TRADE_QUANTITY
         
         self.strategy = s_manager.get_strategy_live(strategy_str, report_info= self.print, trade_action= self.trade_action)
-        
+
         self.ws_running = False
         self.SOCKET = "wss://stream.binance.com:9443/ws/{}@kline_{}".format(TRADE_SYMBOL.lower(), TRADE_INTERVAL)
         self.init_closes()
@@ -42,19 +42,21 @@ class bTrader():
 
 
     def print(self, msg: str):
-        print(str(self.TRADE_SYMBOL) + "-" + str(self.TRADE_INTERVAL) + ": " + str(msg))
+        print(str(self.trader_id) + "-" + str(self.TRADE_SYMBOL) + "-" + str(self.TRADE_INTERVAL) + ": " + str(msg))
 
 
     def start(self):
-        self.websocket_handler.start()
-        self.ws_running = True
-        self.print("Started.")
+        if self.ws_running is False:
+            self.websocket_handler.start()
+            self.ws_running = True
+            self.print("Started.")
 
 
     def stop(self):
-        self.websocket_handler.stop()
-        self.ws_running = False
-        self.print("Stopped.")
+        if self.ws_running is True:
+            self.websocket_handler.stop()
+            self.ws_running = False
+            self.print("Stopped.")
 
 
     def on_message(self, message: str):
