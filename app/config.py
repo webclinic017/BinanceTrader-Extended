@@ -6,13 +6,18 @@ dotenv_path = Path(__file__).with_name('.env') #path to .env file
 
 load_dotenv(dotenv_path = dotenv_path)
 
+class Strategies:
+    B_STRATS = json.loads(os.getenv("B_STRATEGIES"))
+
 class Trade_Info:
     #Set Trade Informations    
     TRADE_SYMBOLS = json.loads(os.getenv("TRADE_SYMBOLS"))
     TRADE_INTERVALS = json.loads(os.getenv("TRADE_INTERVALS"))
+    TRADE_STRATS = json.loads(os.getenv("TRADE_STRATS"))
     
     DEFAULT_SYMBOL = "LTCUSDT"
     DEFAULT_INTERVAL = "15m"
+    DEFAULT_STRAT = "rsi_strategy01"
 
 class Binance_Config:
     # Set Binance API Keys

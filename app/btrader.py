@@ -9,7 +9,8 @@ import TradeStrategies.strategy_manager as s_manager
 
 
 class bTrader():
-    def __init__(self, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str, strategy_str = "rsi_strategy01") -> None:
+    def __init__(self, trader_id: int, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str, strategy_str = "rsi_strategy01") -> None:
+        self.trader_id = trader_id
         self.myClient = myClient
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
