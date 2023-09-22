@@ -19,6 +19,7 @@ app.secret_key = config.Flask_Config.SECRET_KEY
 
 @app.route("/")
 def index():
+    global my_btmanager
     title = "Binance Trader"
     
 
@@ -50,6 +51,22 @@ def index():
         session.pop("backtest_message", None)
     
     print(backtest_message)
+    
+    btraders_info = my_btmanager.myTraders_info
+
+    session["btrader_id"] = "0"
+
+    if "btrader_id" not in session:
+        session["btrader_id"] = "-1"
+    btrader_id = int(session["btrader_id"])
+    
+    #if btrader_id != -1:
+    try:
+        btrader_logs = my_btmanager.myTraders[btrader_id].get_logs()
+    except:
+        btrader_logs = []
+    print(f"app bt_logs: {btrader_logs}")
+
 
     return render_template("index.html", 
                            title = title, 
@@ -58,7 +75,9 @@ def index():
                            display1_trade_symbol=display1_trade_symbol,
                            display1_trade_interval = display1_trade_interval,
                            url_history = url_for("history"),
-                           backtest_message = backtest_message
+                           backtest_message = backtest_message,
+                           btraders_info = btraders_info,
+                           btrader_logs = btrader_logs
                            )
 
 

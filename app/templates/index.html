@@ -15,58 +15,20 @@
 <body
     style="font-family:-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif; background-color:whitesmoke; ">
     <h2>{{ title }}</h2>
+    <!-- The Body -->
     <div>
+        <!-- Chart -->
         <div style=" display: inline-block;">
             <div id="chart_holder">
                 {{ display1_trade_symbol }} | {{ display1_trade_interval }}
                 <div id="chart"></div>
             </div>
 
-            <div>
-                <h3>Strategy Backtesting</h3>
-                <form action="/bg-run-backtest/" , method="post">
-                    <table>
-                        <tr>
-                            <td>Start Date</td>
-                            <td>End Date</td>
-                            <td></td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <input type="date" name="date_start">
-                            </td>
-                            <td>
-                                <input type="date" name="date_end">
-                            </td>
-                            <td>
-                                <input type="submit" name="submit" value="run">
-                            </td>
-                            <td style="color: dodgerblue; font-size: large;">
-                                {{ backtest_message }}
-                            </td>
-                        </tr>
-                    </table>
 
-
-
-                </form>
-            </div>
-            <h3>Strategy Settings</h3>
-            <div id="settings ">
-
-                <div>
-                    <input type="checkbox">
-                    <label>RSI</label>
-                    <input type="text" name="rsi_length" id="rsi_length" placeholder="14" />
-                    Overbought
-                    <input type="text" name="rsi_overbought" id="rsi_overbought" placeholder="70">
-                    Oversold
-                    <input type="text" name="rsi_oversold" id="rsi_oversold" placeholder="30">
-                </div>
-            </div>
 
             <div id="trades"></div>
         </div>
+        <!-- quicktrade -->
         <div style=" display: inline-block;  vertical-align: top;">
             <div style="border:solid gray 1px; padding: 20px; width: 600px; margin: 20px; ">
                 <h2>Quick Trade</h2>
@@ -108,6 +70,88 @@
 
             </div>
         </div>
+        <!-- Backtesting -->
+        <div>
+            <h3>Strategy Backtesting</h3>
+            <form action="/bg-run-backtest/" , method="post">
+                <table>
+                    <tr>
+                        <td>Start Date</td>
+                        <td>End Date</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="date" name="date_start">
+                        </td>
+                        <td>
+                            <input type="date" name="date_end">
+                        </td>
+                        <td>
+                            <input type="submit" name="submit" value="run">
+                        </td>
+                        <td style="color: dodgerblue; font-size: large;">
+                            {{ backtest_message }}
+                        </td>
+                    </tr>
+                </table>
+
+
+
+            </form>
+        </div>
+        <!-- TradeBots-->
+        <div>
+            <!-- TradeBots Table -->
+            <div style="width: fit-content;">
+                <h2 style="text-align: center;">Trade Bots</h2>
+                <table style="margin: 20px; border: 1px solid black;">
+                    <tr>
+                        <td style="padding: 10px; text-align: center;">Pair</td>
+                        <td style="padding: 10px; text-align: center;">Interval</td>
+                        <td style="padding: 10px; text-align: center;">Strategy</td>
+                        <td style="padding: 10px; text-align: center;">Trade Limit</td>
+                        <td style="padding: 10px; text-align: center;">Running</td>
+                    </tr>
+                    {% for item in btraders_info %}
+                    <tr>
+                        <span onclick='btrade_clk({{loop.index}})'>
+                            <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_SYMBOL"]}}</td>
+                            <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_INTERVAL"]}}
+                            </td>
+                            <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_STRAT"]}}</td>
+                            <td style="padding: 10px; text-align: center;">
+                                {{btraders_info[item]["ALLOCATED_TRADE_QUANTITY"]}}</td>
+                            <td style="padding: 10px; text-align: center;">{{btraders_info[item]["Running"]}}</td>
+                        </span>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <textarea id="textarea_btrader_logs" style="height: 600px; width: 800px; flex-wrap: wrap; "></textarea><!--
+                {% for bt_log in btrade_logs %}
+                {{bt_log}}<br>
+                {% endfor %}
+                -->
+        </div>
+
+
+
+        <!-- Strategy Settings-->
+        <h3>Strategy Settings</h3>
+        <div id="settings ">
+
+            <div>
+                <input type="checkbox">
+                <label>RSI</label>
+                <input type="text" name="rsi_length" id="rsi_length" placeholder="14" />
+                Overbought
+                <input type="text" name="rsi_overbought" id="rsi_overbought" placeholder="70">
+                Oversold
+                <input type="text" name="rsi_oversold" id="rsi_oversold" placeholder="30">
+            </div>
+        </div>
+
     </div>
 
 
@@ -124,6 +168,21 @@
  
             tradeDiv.append(messageObject.p)
         };
+        */
+    </script>
+    <script>
+        function btrade_clk(menu_id) {
+            window.alert('i got to here');
+        }
+        /*
+        var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
+        var logs_arr = "{{btrader_logs}}";
+        console.log(logs_arr);
+
+        for (let index = 0; index < logs_arr.length; index++) {
+            const t_log = logs_arr[index];
+            textarea_btrader_logs.append(t_log + "\r\n");
+        }
         */
     </script>
     <script>

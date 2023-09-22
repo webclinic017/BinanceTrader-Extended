@@ -46,12 +46,18 @@ class bTrader():
 
 
     def print(self, msg: str, level = "info"):
-        current_time = datetime.now().strftime("%D/%m/%Y %H:%M:%S")
-        text1 = f"{current_time} {level}  bTrader: {str(self.trader_id)}-{str(self.TRADE_SYMBOL)}-{str(self.TRADE_INTERVAL)}: {str(msg)}"
+        current_time = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+        text1 = f"-{current_time} {level}  bTrader: {str(self.trader_id)}-{str(self.TRADE_SYMBOL)}-{str(self.TRADE_INTERVAL)}: {str(msg)}"
         print(text1)
 
-        if level == "error" or level == "order":
+        if level == "error" or level == "order" or level == "info":
             self.logs.append(text1)
+            print("text1 appended")
+            print(self.logs)
+
+
+    def get_logs(self) -> list:
+        return self.logs
 
 
     def start(self):
