@@ -114,16 +114,18 @@
                         <td style="padding: 10px; text-align: center;">Running</td>
                     </tr>
                     {% for item in btraders_info %}
-                    <tr>
-                        <span onclick='btrade_clk({{loop.index}})'>
-                            <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_SYMBOL"]}}</td>
-                            <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_INTERVAL"]}}
-                            </td>
-                            <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_STRAT"]}}</td>
-                            <td style="padding: 10px; text-align: center;">
-                                {{btraders_info[item]["ALLOCATED_TRADE_QUANTITY"]}}</td>
-                            <td style="padding: 10px; text-align: center;">{{btraders_info[item]["Running"]}}</td>
-                        </span>
+                    <script>
+                        var loopIndex = parseInt("{{ loop.index }}");
+                    </script>
+                    <tr onclick='btrade_clk(loopIndex)'>
+                        <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_SYMBOL"]}}</td>
+                        <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_INTERVAL"]}}
+                        </td>
+                        <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_STRAT"]}}</td>
+                        <td style="padding: 10px; text-align: center;">
+                            {{btraders_info[item]["ALLOCATED_TRADE_QUANTITY"]}}</td>
+                        <td style="padding: 10px; text-align: center;">{{btraders_info[item]["Running"]}}</td>
+
                     </tr>
                     {% endfor %}
                 </table>
