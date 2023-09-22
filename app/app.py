@@ -7,18 +7,10 @@ bconnection = False
 try:
     myClient = bclient.MyClient(config.Binance_Config())
     bconnection = True
+    my_btmanager = btmanager.BTManager(myClient=myClient)
 except Exception as e:
     print(e)
 
-print(config.Trade_Info.TRADE_BOTS)
-print(type(config.Trade_Info.TRADE_BOTS))
-print(type(config.Trade_Info.TRADE_BOTS[0]))
-print(type(config.Trade_Info.TRADE_BOTS[0]["ALLOCATED_TRADE_QUANTITY"]))
-print(config.Trade_Info.TRADE_BOTS[0]["ALLOCATED_TRADE_QUANTITY"])
-
-if True:
-    my_btmanager = btmanager.BTManager(myClient=myClient)
-    
 
 #flask app 
 app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fix for not being able to find templates folder
@@ -110,7 +102,7 @@ def debug2():
 
     
     #my_btmanager.start_trader(0)
-    return "debug01"
+    return "debug02"
 
 
 @app.route("/debug3/")

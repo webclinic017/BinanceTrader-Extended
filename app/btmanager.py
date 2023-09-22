@@ -56,7 +56,9 @@ class BTManager():
         if self.myTraders[index] is not None:
             self.myTraders[index].start()
             self.myTraders_info[str(index)]["Running"] = True
-            time.sleep(1)
+            time.sleep(2)
+            return True
+        return False
 
 
 
@@ -64,6 +66,7 @@ class BTManager():
         if self.myTraders[index] is not None:
             self.myTraders[index].stop()
             self.myTraders_info[str(index)]["Running"] = False
+
 
 
     def create_traders_from_env(self):
@@ -89,8 +92,9 @@ class BTManager():
         #for btindex, btrader in enumerate(self.myTraders):
         #    self.start_trader(btindex)
         for index in range(len(self.myTraders)):
-            self.start_trader(index=index)
-
+            wait = self.start_trader(index=index)
+            if wait is True:
+                pass
     
 #my_btrader1 = btrader.bTrader(myClient=myClient, TRADE_SYMBOL=config.Trade_Info.TRADE_SYMBOLS[0], TRADE_INTERVAL=config.Trade_Info.TRADE_INTERVALS[0])
 #my_btrader2 = btrader.bTrader(myClient=myClient, TRADE_SYMBOL=config.Trade_Info.TRADE_SYMBOLS[1], TRADE_INTERVAL=config.Trade_Info.TRADE_INTERVALS[1])

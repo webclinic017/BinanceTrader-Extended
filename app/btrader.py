@@ -6,6 +6,7 @@ import asyncio, websockets, threading
 from typing import Callable
 from backtrader import Strategy
 import TradeStrategies.strategy_manager as s_manager
+from datetime import datetime
 
 
 class bTrader():
@@ -15,6 +16,7 @@ class bTrader():
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
         self.ALLOCATED_TRADE_QUANTITY = ALLOCATED_TRADE_QUANTITY
+        self.logs = []
         
         self.strategy = s_manager.get_strategy_live(strategy_str, report_info= self.print, trade_action= self.trade_action)
 
@@ -37,12 +39,19 @@ class bTrader():
             price_closed = float(kline[4])
             self.closes.append(price_closed)
 
+        self.closes = self.closes[-200:] # keep the list to 200 element
+
         self.print(self.closes) 
         self.print(f"a bTrader instance is initiated with {len(self.closes)} starting values. Running: {self.ws_running}")
 
 
-    def print(self, msg: str):
-        print(str(self.trader_id) + "-" + str(self.TRADE_SYMBOL) + "-" + str(self.TRADE_INTERVAL) + ": " + str(msg))
+    def print(self, msg: str, level = "info"):
+        current_time = datetime.now().strftime("%D/%m/%Y %H:%M:%S")
+        text1 = f"{current_time} {level}  bTrader: {str(self.trader_id)}-{str(self.TRADE_SYMBOL)}-{str(self.TRADE_INTERVAL)}: {str(msg)}"
+        print(text1)
+
+        if level == "error" or level == "order":
+            self.logs.append(text1)
 
 
     def start(self):
@@ -74,6 +83,8 @@ class bTrader():
         if is_candle_closed:
             self.print("candle closed at {}".format(price_closed))
             self.closes.append(float(price_closed))
+
+            self.closes = self.closes[-200:] # keep the list to 200 elements
             self.print("closes")
             self.print(self.closes)
             self.print(len(self.closes))
@@ -92,13 +103,13 @@ class bTrader():
         #This is the place to calculate quantity over orders with a percentage of the total asset in the future. Not yet implemented
         final_quantity = float(quantity) * float(self.ALLOCATED_TRADE_QUANTITY)
 
-        self.print(f"order signal received. side: {side}, strategy quantity: {quantity}, final quantity: {final_quantity}")
+        self.print(f"order signal received. side: {side}, strategy quantity: {quantity}, final quantity: {final_quantity}", "order")
         order_success = self.myClient.fill_order(trade_symbol= self.TRADE_SYMBOL, side_order= side, use_asset_percentage= is_asset_percentage, trade_quantity= final_quantity)
         return order_success
         
 
 class WebSocketHandler:
-    def __init__(self, SOCKET: str, on_message: Callable[[str], None], report_error_str: Callable[[str], None]) -> None:
+    def __init__(self, SOCKET: str, on_message: Callable[[str], None], report_error_str: Callable[[str, str], None]) -> None:
         self.SOCKET = SOCKET
         self.on_message = on_message
         self.report_error_str = report_error_str
@@ -131,7 +142,7 @@ class WebSocketHandler:
                         message = await ws.recv()
                         self.on_message(message)
                     except Exception as e:
-                        self.report_error_str(f"An error occurred: {e}")
+                        self.report_error_str(f"An error occurred: {e}", "error")
                         break
 
         loop.run_until_complete(inner_websocket_loop())
