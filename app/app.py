@@ -11,6 +11,9 @@ try:
 except Exception as e:
     print(e)
 
+trade_strats = config.Strategies.B_STRATS
+all_intervals = config.Strategies.ALL_INTERVALS
+
 
 #flask app 
 app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fix for not being able to find templates folder
@@ -20,9 +23,12 @@ app.secret_key = config.Flask_Config.SECRET_KEY
 @app.route("/")
 def index():
     global my_btmanager
+    global all_intervals
     title = "Binance Trader"
     
+    print("index")
 
+    print(session["display1_trade_symbol"], session["display1_trade_interval"])
     #display 1
     if "display1_trade_symbol" not in session:
         session["display1_trade_symbol"] = str(config.Trade_Info.DEFAULT_SYMBOL)
@@ -34,7 +40,7 @@ def index():
     display1_trade_symbol = session["display1_trade_symbol"]
     display1_trade_interval = session["display1_trade_interval"]
 
-
+    print(display1_trade_symbol, display1_trade_interval)
     #quick trade
     if bconnection:
         acc_info = myClient.client.get_account()
@@ -67,8 +73,7 @@ def index():
         btrader_logs = []
     print(f"app bt_logs: {btrader_logs}")
 
-    trade_strats = config.Strategies.B_STRATS
-    all_intervals = config.Strategies.ALL_INTERVALS
+    
 
     print(all_intervals)
 
@@ -142,20 +147,81 @@ def debug3():
     return "debug03"
 
 
-@app.route("/buy/", methods = ["POST"])
-def buy():
+@app.route("/create_new_trader/", methods = ["POST"])
+def create_new_trader():
+    global my_btmanager
+
+    all_trade_symbols = []
+
+    if bconnection:
+        exc_info = myClient.client.get_exchange_info()
+        exc_trade_symbols = exc_info["symbols"]
+        for sym in exc_trade_symbols:
+            all_trade_symbols.append(sym['symbol'])
+
+
+    if "nt_trade_symbol" in request.form:
+        nt_trade_symbol = request.form["nt_trade_symbol"]
+        if nt_trade_symbol not in all_trade_symbols:
+            return redirect(url_for("index"))
+    else:
+        return redirect(url_for("index"))
     
-    return "buy"
+    if "nt_trade_interval" in request.form:
+        nt_trade_interval = request.form["nt_trade_interval"]
+        if nt_trade_interval not in all_intervals:
+            return redirect(url_for("index"))
+    else:
+        return redirect(url_for("index"))
+    
+    if "nt_trade_strat" in request.form:
+        nt_trade_strat = request.form["nt_trade_strat"]
+        if nt_trade_strat not in trade_strats:
+            return redirect(url_for("index"))
+    else:
+        return redirect(url_for("index"))
+
+    if "nt_trade_quantity" in request.form:
+        nt_trade_quantity = request.form["nt_trade_quantity"]
+        try:
+            nt_trade_quantity = float(nt_trade_quantity)
+        except:
+            return redirect(url_for("index"))
+    else:
+        return redirect(url_for("index"))
+    # Good Parameters
+    my_btmanager.create_trader(nt_trade_symbol, nt_trade_interval, nt_trade_quantity, nt_trade_strat)
+
+    return redirect(url_for("index"))
 
 
-@app.route("/sell/", methods = ["POST"])
-def sell():
-    return "sell"
+@app.route("/change_chart/", methods = ["POST"])
+def change_chart():
+    global all_intervals
+    all_trade_symbols = []
+
+    if bconnection:
+        exc_info = myClient.client.get_exchange_info()
+        exc_trade_symbols = exc_info["symbols"]
+        for sym in exc_trade_symbols:
+            all_trade_symbols.append(sym['symbol'])
 
 
-@app.route("/settings/")
-def settings():
-    return "settings"
+    if "d1_trade_symbol" in request.form:
+        d1_trade_symbol = request.form["d1_trade_symbol"]
+        if d1_trade_symbol not in all_trade_symbols:
+            #session["backtest_message"] = "backtest Failed - Incorrect Strategy"
+            return redirect(url_for("index"))
+        session["display1_trade_symbol"] = d1_trade_symbol
+
+    if "d1_trade_interval" in request.form:
+        d1_trade_interval = request.form["d1_trade_interval"]
+        if d1_trade_interval not in all_intervals:
+            #session["backtest_message"] = "backtest Failed - Incorrect Strategy"
+            return redirect(url_for("index"))
+        session["display1_trade_interval"] = d1_trade_interval
+
+    return redirect(url_for("index"))
 
 
 @app.route("/history")

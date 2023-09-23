@@ -50,35 +50,28 @@
             <div style=" display: inline-block;">
                 <div id="chart_holder" style="text-align: left;">
                     {{ display1_trade_symbol }} | {{ display1_trade_interval }}
-                    <div style="display: inline-block;">
-                        <button id="change_chart_btn">Change Chart</button>
-                        <form id="change_chart_form" style="display: none;" action="/bg-run-backtest/" , method="post">
-                            <table style="margin: auto;">
-                                <tr>
-                                    <td>Symbol</td>
-                                    <td>Interval</td>
-                                    <td></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <select id="d1_trade_symbol" name="d1_trade_symbol">
-                                            {% for symbol in exc_trade_symbols %}
-                                            <option>{{symbol['symbol']}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <select id="d1_trade_interval" name="d1_trade_interval">
-                                            {% for interval in all_intervals %}
-                                            <option>{{interval}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </td>
-                                    <td>
-                                        <input type="submit" name="submit" value="change">
-                                    </td>
-                                </tr>
-                            </table>
+                    <div style="display: inline-block; margin-left: 10px; margin-right: 60px;">
+                        <button id="change_chart_btn">Change</button>
+                        <form id="change_chart_form" style="display: none;" action="/change_chart/" , method="post">
+                            <tr>
+                                <td>
+                                    <select id="d1_trade_symbol" name="d1_trade_symbol">
+                                        {% for symbol in exc_trade_symbols %}
+                                        <option>{{symbol['symbol']}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <select id="d1_trade_interval" name="d1_trade_interval">
+                                        {% for interval in all_intervals %}
+                                        <option>{{interval}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="submit" name="submit" value="Change">
+                                </td>
+                            </tr>
                         </form>
                         <script>
                             const ccbtn = document.getElementById('change_chart_btn');
@@ -227,8 +220,58 @@
                 </tr>
                 {% endfor %}
             </table>
-            <div style="text-align:right; margin-top: 20px; margin-bottom: 20px;">
-                <button>add new trader</button>
+            <div style="text-align:center; margin-top: 20px; margin-bottom: 20px;">
+                <div style="display: inline-block;">
+                    <button id="nt_btn">Create New Trader</button>
+                    <form id="nt_form" style="display: none;" action="/create_new_trader/" , method="post">
+                        <tr>
+                            <td>
+                                <select id="nt_trade_symbol" name="nt_trade_symbol">
+                                    {% for symbol in exc_trade_symbols %}
+                                    <option>{{symbol['symbol']}}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select id="nt_trade_interval" name="nt_trade_interval">
+                                    {% for interval in all_intervals %}
+                                    <option>{{interval}}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select id="nt_trade_strat" name="nt_trade_strat">
+                                    {% for strat in trade_strats %}
+                                    <option>{{strat}}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" name="nt_trade_quantity" value="Allocated Quantity">
+                            </td>
+                            <td>
+                                <input type="submit" name="submit" value="Create">
+                            </td>
+                        </tr>
+                    </form>
+                    <script>
+                        const ntbtn = document.getElementById('nt_btn');
+
+                        ntbtn.addEventListener('click', () => {
+                            const ntform = document.getElementById('nt_form');
+
+                            if (ntform.style.display === 'none') {
+                                // 👇️ this SHOWS the form
+                                ntform.style.display = 'block';
+                                ntbtn.style.display = 'none';
+                            } else {
+                                // 👇️ this HIDES the form
+                                ntform.style.display = 'none';
+                                ntbtn.style.display = 'block';
+                            }
+                        });
+                    </script>
+                </div>
             </div>
         </div>
         <textarea id="textarea_btrader_logs" style="height: 300px; width: 500px; flex-wrap: nowrap; "></textarea><!--
