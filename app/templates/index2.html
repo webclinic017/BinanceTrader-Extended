@@ -1,0 +1,301 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+{% block head %}
+{{ super() }}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BinanceTrader</title>
+
+<style>
+    tr#tradebot_row {
+        background-color: rgb(134, 207, 134);
+        cursor: pointer;
+        height: 30px;
+
+    }
+
+    tr#tradebot_row:hover {
+        background-color: rgb(126, 171, 212);
+        cursor: pointer;
+
+    }
+
+    td#tbot_td {
+        border: none;
+    }
+
+    div#1wrapper {
+        overflow: auto;
+    }
+
+    div#1wrapper>div {
+        float: left;
+        width: 50%;
+    }
+</style>
+
+<script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+{% endblock %}
+
+
+
+{% block content %}
+
+<!-- The Body -->
+<div>
+    <div style="text-align: center;">
+        <div class="1wrapper">
+            <!-- Chart -->
+            <div style=" display: inline-block;">
+                <div id="chart_holder" style="text-align: left;">
+                    {{ display1_trade_symbol }} | {{ display1_trade_interval }}
+                    <div style="display: inline-block;">
+                        <button id="change_chart_btn">Change Chart</button>
+                        <form id="change_chart_form" style="display: none;" action="/bg-run-backtest/" , method="post">
+                            <table style="margin: auto;">
+                                <tr>
+                                    <td>Symbol</td>
+                                    <td>Interval</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select id="d1_trade_symbol" name="d1_trade_symbol">
+                                            {% for symbol in exc_trade_symbols %}
+                                            <option>{{symbol['symbol']}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select id="d1_trade_interval" name="d1_trade_interval">
+                                            {% for interval in all_intervals %}
+                                            <option>{{interval}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="submit" value="change">
+                                    </td>
+                                </tr>
+                            </table>
+                        </form>
+                        <script>
+                            const ccbtn = document.getElementById('change_chart_btn');
+
+                            ccbtn.addEventListener('click', () => {
+                                const ccform = document.getElementById('change_chart_form');
+
+                                if (ccform.style.display === 'none') {
+                                    // 👇️ this SHOWS the form
+                                    ccform.style.display = 'block';
+                                    ccbtn.style.display = 'none';
+                                } else {
+                                    // 👇️ this HIDES the form
+                                    ccform.style.display = 'none';
+                                    ccbtn.style.display = 'block';
+                                }
+                            });
+                        </script>
+                    </div>
+                    <div id="chart"></div>
+                </div>
+
+                <!-- Backtesting -->
+                <div>
+                    <h3>Strategy Backtesting</h3>
+                    <div>
+                        <form action="/bg-run-backtest/" , method="post">
+                            <table style="margin: auto;">
+                                <tr>
+                                    <td>Strategy</td>
+                                    <td>Start Date</td>
+                                    <td>End Date</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select id="trade_strat" name="trade_strat">
+                                            {% for strat in trade_strats %}
+                                            <option>{{strat}}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="date" name="date_start">
+                                    </td>
+                                    <td>
+                                        <input type="date" name="date_end">
+                                    </td>
+                                    <td>
+                                        <input type="submit" name="submit" value="run">
+                                    </td>
+                                    <td style="color: dodgerblue; font-size: large;">
+                                        {{ backtest_message }}
+                                    </td>
+                                </tr>
+                            </table>
+
+
+
+                        </form>
+                    </div>
+
+                </div>
+
+                <div id="trades"></div>
+            </div>
+
+            <!-- quicktrade -->
+            <div style=" display: inline-block;  vertical-align: top; width: fit-content;">
+                <div style="border:solid gray 1px; padding: 20px; width: 600px; margin: 20px; ">
+                    <h2 style="text-align: left;">Quick Trade</h2>
+                    <form action="/quicktrade" method="post">
+                        <select id="trade_symbol" name="trade_symbol">
+                            {% for symbol in exc_trade_symbols %}
+                            <option>{{symbol['symbol']}}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" id="trade_quantity" name="trade_quantity" placeholder="1.0">
+                        <input type="submit" name="trade_action" value="buy">
+                        <input type="submit" name="trade_action" value="sell">
+                    </form>
+                    <div>
+                        {% for mesg in get_flashed_messages() %}
+                        <h3>{{ mesg }}</h3>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div id="acc_balances" style="text-align: center;">
+                    <h2>Account Balances</h2>
+                    <table style="margin-left: auto; margin-right: auto;">
+                        {% for acc_balance in acc_balances %}
+                        {% if acc_balance["free"] | float > 0 %}
+                        <tr>
+                            <td style="text-align: right;">
+                                {{ acc_balance["asset"] }} ::
+                            </td>
+                            <td style="text-align: left;">
+                                {{acc_balance["free"]}}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </table>
+
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- TradeBots-->
+    <div style=" display: inline-block; width: fit-content;">
+        <!-- TradeBots Table -->
+        <div style="width: fit-content; margin:0 auto;">
+            <h2 style="text-align: center;">Trade Bots</h2>
+
+            <table style="margin-left: 20px; border: 1px solid black; border-collapse: collapse;">
+                <tr>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Pair</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Interval</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Strategy</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Trade Limit</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Running</td>
+                </tr>
+                {% for item in btraders_info %}
+                <script>
+                    var loopIndex = parseInt("{{ loop.index }}");
+                </script>
+                <tr onclick='btrade_clk(loopIndex)' id="tradebot_row">
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btraders_info[item]["TRADE_SYMBOL"]}}</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btraders_info[item]["TRADE_INTERVAL"]}}
+                    </td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btraders_info[item]["TRADE_STRAT"]}}</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btraders_info[item]["ALLOCATED_TRADE_QUANTITY"]}}</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btraders_info[item]["Running"]}}
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </table>
+            <div style="text-align:right; margin-top: 20px; margin-bottom: 20px;">
+                <button>add new trader</button>
+            </div>
+        </div>
+        <textarea id="textarea_btrader_logs" style="height: 300px; width: 500px; flex-wrap: nowrap; "></textarea><!--
+{% for bt_log in btrade_logs %}
+{{bt_log}}<br>
+{% endfor %}
+-->
+    </div>
+
+
+
+
+
+    <!-- Strategy Settings-->
+    <h3>Strategy Settings</h3>
+    <div id="settings ">
+
+        <div>
+            <input type="checkbox">
+            <label>RSI</label>
+            <input type="text" name="rsi_length" id="rsi_length" placeholder="14" />
+            Overbought
+            <input type="text" name="rsi_overbought" id="rsi_overbought" placeholder="70">
+            Oversold
+            <input type="text" name="rsi_oversold" id="rsi_oversold" placeholder="30">
+        </div>
+    </div>
+
+</div>
+
+
+<script>
+    //var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/ltcbusd@trade");
+
+    var tradeDiv = document.getElementById("trades")
+
+    /*
+    binanceSocket.onmessage = (event) => {
+        console.log(event.data);
+ 
+        var messageObject = JSON.parse(event.data)
+ 
+        tradeDiv.append(messageObject.p)
+    };
+    */
+</script>
+<script>
+    function btrade_clk(menu_id) {
+        window.alert('i got to here');
+    }
+    /*
+    var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
+    var logs_arr = "{{btrader_logs}}";
+    console.log(logs_arr);
+
+    for (let index = 0; index < logs_arr.length; index++) {
+        const t_log = logs_arr[index];
+        textarea_btrader_logs.append(t_log + "\r\n");
+    }
+    */
+</script>
+<script>
+    var TRADE_SYMBOL = "{{display1_trade_symbol}}";
+    var TRADE_INTERVAL = "{{display1_trade_interval}}";
+    var url_history = "{{url_history}}";
+</script>
+<!-- <script src="../static/chart.js"></script> -->
+<script src="{{ url_for('static', filename='chart.js' )}}"></script>
+
+{% endblock %}

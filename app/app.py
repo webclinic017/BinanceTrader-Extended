@@ -67,8 +67,12 @@ def index():
         btrader_logs = []
     print(f"app bt_logs: {btrader_logs}")
 
+    trade_strats = config.Strategies.B_STRATS
+    all_intervals = config.Strategies.ALL_INTERVALS
 
-    return render_template("index.html", 
+    print(all_intervals)
+
+    return render_template("index2.html", 
                            title = title, 
                            acc_balances= acc_balances, 
                            exc_trade_symbols = exc_trade_symbols, 
@@ -77,7 +81,9 @@ def index():
                            url_history = url_for("history"),
                            backtest_message = backtest_message,
                            btraders_info = btraders_info,
-                           btrader_logs = btrader_logs
+                           btrader_logs = btrader_logs,
+                           trade_strats = trade_strats,
+                           all_intervals= all_intervals
                            )
 
 
@@ -91,7 +97,7 @@ def quicktrade():
     if request.form['trade_action'] == "sell":
         t_action = "SELL"
 
-    q_trade_result = myClient.fill_order( request.form['trade_symbol'], t_action, False, request.form["trade_quantity"])
+    q_trade_result = myClient.fill_order( request.form['trade_symbol'], t_action, False, float(request.form["trade_quantity"]))
     
     if q_trade_result != True:
         flash("Quick Trade Failed: " + q_trade_result.message, "error")
@@ -169,6 +175,12 @@ def bg_run_backtest():
     print(request.form)
     date_start = request.form["date_start"]
     date_end = request.form["date_end"]
+    if "trade_strat" in request.form:
+        trade_strat = request.form["trade_strat"]
+        if trade_strat not in config.Strategies.B_STRATS:
+            session["backtest_message"] = "backtest Failed - Incorrect Strategy"
+            return redirect(url_for("index"))
+        session["display1_trade_strat"] = trade_strat
     
     if date_end =="" or date_start == "":
         session["backtest_message"] = "backtest Failed - Enter Dates"
@@ -180,6 +192,7 @@ def bg_run_backtest():
     if datetime_end <= datetime_start:
         session["backtest_message"] = "backtest Failed - Wrong Dates"
         return redirect(url_for("index"))
+    
     
 
     #set up symbol and interval

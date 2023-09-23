@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+
+<head>
+    {% block head %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"> 
+    -->
+    <style type="text/css">
+        .myfooter {
+            color: #336699;
+        }
+    </style>
+    <title>{% block title %}{% endblock %} - Binance Trader</title>
+    {% endblock %}
+</head>
+
+<body
+    style="font-family:-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif; background-color:whitesmoke; ">
+    <div style="display: flex; justify-content: center;">
+        <h2>Binance Trader</h2>
+    </div>
+
+    <div id=" content">{% block content %}{% endblock %}
+    </div>
+
+    <div id="footer" class="myfooter" style="text-align: center;">
+        <br>
+        {% block footer %}
+        <p></p>
+
+        <span onclick="location='https://github.com/BeratDM/BinanceTrader-Extended'">GitHub</span>
+        {% endblock %}
+    </div>
+</body>
+
+</html>

@@ -2,6 +2,7 @@ from dotenv import load_dotenv, dotenv_values
 from pathlib import Path
 import os, json
 import ast
+from binance.enums import *
 
 dotenv_path = Path(__file__).with_name('.env') #path to .env file
 
@@ -9,6 +10,23 @@ load_dotenv(dotenv_path = dotenv_path)
 
 class Strategies:
     B_STRATS = json.loads(os.getenv("B_STRATEGIES"))
+
+    ALL_INTERVALS = [KLINE_INTERVAL_1SECOND,
+                     KLINE_INTERVAL_1MINUTE,
+                     KLINE_INTERVAL_3MINUTE,
+                     KLINE_INTERVAL_5MINUTE,
+                     KLINE_INTERVAL_15MINUTE,
+                     KLINE_INTERVAL_30MINUTE,
+                     KLINE_INTERVAL_1HOUR,
+                     KLINE_INTERVAL_2HOUR,
+                     KLINE_INTERVAL_4HOUR,
+                     KLINE_INTERVAL_6HOUR,
+                     KLINE_INTERVAL_8HOUR,
+                     KLINE_INTERVAL_12HOUR,
+                     KLINE_INTERVAL_1DAY,
+                     KLINE_INTERVAL_3DAY,
+                     KLINE_INTERVAL_1WEEK,
+                     KLINE_INTERVAL_1MONTH]
 
 class Trade_Info:
     #Set Trade Informations    

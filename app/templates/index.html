@@ -7,6 +7,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BinanceTrader</title>
 
+    <style>
+        tr#tradebot_row {
+            background-color: rgb(134, 207, 134);
+            cursor: pointer;
+            height: 30px;
+
+        }
+
+        tr#tradebot_row:hover {
+            background-color: rgb(126, 171, 212);
+            cursor: pointer;
+
+        }
+
+        td#tbot_td {
+            border: none;
+        }
+    </style>
+
     <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
 
 
@@ -105,32 +124,40 @@
             <!-- TradeBots Table -->
             <div style="width: fit-content;">
                 <h2 style="text-align: center;">Trade Bots</h2>
-                <table style="margin: 20px; border: 1px solid black;">
+
+                <table style="margin-left: 20px; border: 1px solid black; border-collapse: collapse;">
                     <tr>
-                        <td style="padding: 10px; text-align: center;">Pair</td>
-                        <td style="padding: 10px; text-align: center;">Interval</td>
-                        <td style="padding: 10px; text-align: center;">Strategy</td>
-                        <td style="padding: 10px; text-align: center;">Trade Limit</td>
-                        <td style="padding: 10px; text-align: center;">Running</td>
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">Pair</td>
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">Interval</td>
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">Strategy</td>
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">Trade Limit</td>
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">Running</td>
                     </tr>
                     {% for item in btraders_info %}
                     <script>
                         var loopIndex = parseInt("{{ loop.index }}");
                     </script>
-                    <tr onclick='btrade_clk(loopIndex)'>
-                        <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_SYMBOL"]}}</td>
-                        <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_INTERVAL"]}}
+                    <tr onclick='btrade_clk(loopIndex)' id="tradebot_row">
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">
+                            {{btraders_info[item]["TRADE_SYMBOL"]}}</td>
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">
+                            {{btraders_info[item]["TRADE_INTERVAL"]}}
                         </td>
-                        <td style="padding: 10px; text-align: center;">{{btraders_info[item]["TRADE_STRAT"]}}</td>
-                        <td style="padding: 10px; text-align: center;">
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">
+                            {{btraders_info[item]["TRADE_STRAT"]}}</td>
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">
                             {{btraders_info[item]["ALLOCATED_TRADE_QUANTITY"]}}</td>
-                        <td style="padding: 10px; text-align: center;">{{btraders_info[item]["Running"]}}</td>
+                        <td id="tbot_td" style="padding: 10px; text-align: center;">{{btraders_info[item]["Running"]}}
+                        </td>
 
                     </tr>
                     {% endfor %}
                 </table>
+                <div style="text-align:right; margin-top: 20px; margin-bottom: 20px;">
+                    <button>add new trader</button>
+                </div>
             </div>
-            <textarea id="textarea_btrader_logs" style="height: 600px; width: 800px; flex-wrap: wrap; "></textarea><!--
+            <textarea id="textarea_btrader_logs" style="height: 300px; width: 500px; flex-wrap: nowrap; "></textarea><!--
                 {% for bt_log in btrade_logs %}
                 {{bt_log}}<br>
                 {% endfor %}
