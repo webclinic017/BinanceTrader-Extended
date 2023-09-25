@@ -7,7 +7,7 @@ from typing import Callable
 from backtrader import Strategy
 import TradeStrategies.strategy_manager as s_manager
 from datetime import datetime
-
+import log_handler
 
 class bTrader():
     def __init__(self, trader_id: int, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str, ALLOCATED_TRADE_QUANTITY: float, strategy_str = "rsi_strategy01", ) -> None:
@@ -48,9 +48,11 @@ class bTrader():
     def print(self, msg: str, level = "info"):
         current_time = datetime.now().strftime("%d/%m/%y %H:%M:%S")
         text1 = f"-{current_time} {level}  bTrader: {str(self.trader_id)}-{str(self.TRADE_SYMBOL)}-{str(self.TRADE_INTERVAL)}: {str(msg)}"
-        print(text1)
+        
+        log_handler.myLogHandler.add_btrader_log(btrader_id= self.trader_id, level=level, msg=text1)
+        
 
-        if level == "error" or level == "order" or level == "info":
+        if level == "error" or level == "order":
             self.logs.append(text1)
             print("text1 appended")
             print(self.logs)
@@ -64,14 +66,14 @@ class bTrader():
         if self.ws_running is False:
             self.websocket_handler.start()
             self.ws_running = True
-            self.print("Started.")
+            self.print("Started.", level="setting")
 
 
     def stop(self):
         if self.ws_running is True:
             self.websocket_handler.stop()
             self.ws_running = False
-            self.print("Stopped.")
+            self.print("Stopped.", level="setting")
 
 
     def on_message(self, message: str):

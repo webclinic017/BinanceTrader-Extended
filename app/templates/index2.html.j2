@@ -309,7 +309,7 @@
 
     var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
     logs1.forEach(log1 => {
-        textarea_btrader_logs.append(log1 + "\r\n");
+        textarea_btrader_logs.append(log1["msg"] + "\r\n");
     });
     textarea_btrader_logs.scrollTop = textarea_btrader_logs.scrollHeight;
 </script>

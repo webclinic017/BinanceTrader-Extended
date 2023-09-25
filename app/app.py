@@ -79,9 +79,11 @@ def index():
     
     #if btrader_id != -1:
     try:
-        btrader_logs = my_btmanager.myTraders[btrader_id].get_logs()
-    except:
+        #btrader_logs = my_btmanager.myTraders[btrader_id].get_logs()
+        btrader_logs = log_handler.myLogHandler.get_btrader_logs_all_special()
+    except Exception as e:
         btrader_logs = []
+        print(e)
     print(f"app bt_logs: {btrader_logs}")
 
     
@@ -107,11 +109,17 @@ def index():
 def quicktrade():
     print(request.form)
 
+    if bconnection is False:
+        return redirect("/")
+
     #Quick Trade
     if request.form['trade_action'] == "buy":
         t_action = "BUY"
-    if request.form['trade_action'] == "sell":
+    elif request.form['trade_action'] == "sell":
         t_action = "SELL"
+    else:
+        flash("Quick Trade Failed: Invalid trade action", "error")
+        return redirect("/")
 
     q_trade_result = myClient.fill_order( request.form['trade_symbol'], t_action, False, float(request.form["trade_quantity"]))
     
@@ -154,6 +162,30 @@ def debug3():
     #my_btmanager.start_trader(1)
     return "debug03"
 
+
+@app.route("/trader")
+def trader():
+    if bconnection is False:
+        return redirect(url_for("index"))
+    
+    btrader_id = request.args.get("btrader_id", default="-1", type=str)
+
+    if int(btrader_id) < 0:
+        btrader_id = session["btrader_id"]
+
+    if int(btrader_id) < 0:
+        return redirect(url_for("index")) 
+    
+    if btrader_id not in my_btmanager.myTraders_info.keys:
+        return redirect(url_for("index"))
+    
+    session["btrader_id"] = btrader_id
+
+    myTrader_info = my_btmanager.myTraders_info[btrader_id]
+    btrader_logs_info = log_handler.myLogHandler.get_btrader_logs_info( btrader_id= int(btrader_id))
+    btrader_logs_special = log_handler.myLogHandler.get_btrader_logs_special(btrader_id= int(btrader_id))
+
+    pass
 
 @app.route("/create_new_trader/", methods = ["POST"])
 def create_new_trader():
