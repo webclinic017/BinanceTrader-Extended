@@ -88,7 +88,7 @@ def index():
 
     print(all_intervals)
 
-    return render_template("index2.html", 
+    return render_template("index2.html.j2", 
                            title = title, 
                            acc_balances= acc_balances, 
                            exc_trade_symbols = exc_trade_symbols, 
