@@ -309,8 +309,6 @@
 
 
 <script>
-    // Disable linting for the next line
-    // eslint-disable-next-line
     var logs1 = {{ btrader_logs | tojson }};
 
     var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
@@ -341,17 +339,7 @@
         window.alert('i got to here');
     }
 </script>
-<!-- <script>
-    var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
-    var logs_arr = '{{ btrader_logs }}';
-    console.log(logs_arr);
 
-    for (let index = 0; index < logs_arr.length; index++) {
-        const t_log = logs_arr[index];
-        textarea_btrader_logs.append(t_log + "\r\n");
-    }
-
-</script> -->
 <script>
     var TRADE_SYMBOL = "{{display1_trade_symbol}}";
     var TRADE_INTERVAL = "{{display1_trade_interval}}";
