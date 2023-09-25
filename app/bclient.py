@@ -19,7 +19,7 @@ class MyClient():
         try:
            self.client.get_account()
         except Exception as e:
-           self.myLogHandler.add_bclient_log(f"Binance Client Error: {e}")
+           self.myLogHandler.add_bclient_log(msg= f"Binance Client Error: {e}", level="critical")
            #self.logs.append(f"API Error: {e}")
            raise ValueError('Manually thrown exception.')
 

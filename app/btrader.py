@@ -16,7 +16,6 @@ class bTrader():
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
         self.ALLOCATED_TRADE_QUANTITY = ALLOCATED_TRADE_QUANTITY
-        self.logs = []
         
         self.strategy = s_manager.get_strategy_live(strategy_str, report_info= self.print, trade_action= self.trade_action)
 
@@ -52,14 +51,13 @@ class bTrader():
         log_handler.myLogHandler.add_btrader_log(btrader_id= self.trader_id, level=level, msg=text1)
         
 
-        if level == "error" or level == "order":
-            self.logs.append(text1)
-            print("text1 appended")
-            print(self.logs)
 
+    def get_logs_info(self) -> list:
+        return log_handler.myLogHandler.get_btrader_logs_info(self.trader_id)
+    
 
-    def get_logs(self) -> list:
-        return self.logs
+    def get_logs_special(self) -> list:
+        return log_handler.myLogHandler.get_btrader_logs_special(self.trader_id)
 
 
     def start(self):

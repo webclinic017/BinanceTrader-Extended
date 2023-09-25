@@ -1,21 +1,40 @@
+from datetime import datetime
 
 class LogHandler:
 
     def __init__(self) -> None:
+        self.logs_error = []
         self.logs_bclient = []
-        self.logs_btrader_info = {"a": []}
-        self.logs_btrader_special = {"a": []}
+        self.logs_btrader_info = {}
+        self.logs_btrader_special = {}
         self.logs_btrader_all_special = []
     
 
-    def add_bclient_log(self, msg) -> None:
-        self.logs_bclient.append(msg)
+    ################ functional
+    def cook_msg(self, msg: str, level: str, trader_id = -2) -> str:
+        current_time = datetime.now().strftime("%d/%m/%y %H:%M:%S")
+        text1 = f"{current_time} ({level}) bTrader: {str(trader_id)}: {str(msg)}"
+        return text1
+
+
+    ################ self/error
+    def add_error_log(self, msg: str, level: str, trader_id: int) -> None:
+        text1 = self.cook_msg(msg=msg, level=level, trader_id=trader_id)
+        self.logs_error.append(text1)
+        print(text1)
+
+
+    ################ bclient
+    def add_bclient_log(self, msg, level="info") -> None:
+        text1 = self.cook_msg(msg=msg, level="critical", trader_id=-3)
+        self.logs_bclient.append(text1)
 
 
     def get_bclient_logs(self) -> list:
         return self.logs_bclient
     
-
+    
+    ################ btrader
     def add_btrader_log(self, btrader_id: int, level: str, msg: str) -> None:
         try:
             log = {
@@ -38,7 +57,7 @@ class LogHandler:
             if level != "info":
                 self.logs_btrader_special[str(btrader_id)].append(log)
         except Exception as e:
-            print(e)
+            self.add_error_log(msg=e, level="critical", trader_id=-2)
 
 
     def get_btrader_logs_all_special(self) -> list:
@@ -62,6 +81,7 @@ class LogHandler:
 
     def get_btrader_logs_info(self, btrader_id: int) -> list:
         return self.logs_btrader_info[str(btrader_id)]
+
 
 
 myLogHandler = LogHandler()

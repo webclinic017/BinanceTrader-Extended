@@ -79,7 +79,6 @@ def index():
     
     #if btrader_id != -1:
     try:
-        #btrader_logs = my_btmanager.myTraders[btrader_id].get_logs()
         btrader_logs = log_handler.myLogHandler.get_btrader_logs_all_special()
     except Exception as e:
         btrader_logs = []
