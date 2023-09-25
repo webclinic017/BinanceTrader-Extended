@@ -19,8 +19,29 @@
 
 <body
     style="font-family:-apple-system, BlinkMacSystemFont, Trebuchet MS, Roboto, Ubuntu, sans-serif; background-color:whitesmoke; ">
-    <div style="display: flex; justify-content: center;">
-        <h2>Binance Trader</h2>
+    <div style="background-color: aqua; text-align: center;">
+        {% with upper1s = get_flashed_messages(category_filter=["upper1"]) %}
+        {% if upper1s %}
+        <div class="alert-message block-message error">
+            <a class="close" href="#">×</a>
+            <ul>
+                {%- for msg in upper1s %}
+                <li>{{ msg }}</li>
+                {% endfor -%}
+            </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+
+
+    <div style="display: flex; justify-content: center; ">
+        <a style="text-decoration:none" href="/">
+            <h2>Binance Trader</h2>
+        </a>
+    </div>
+
+    <div style="height: 30px;">
     </div>
 
     <div id=" content">{% block content %}{% endblock %}

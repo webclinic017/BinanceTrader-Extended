@@ -135,7 +135,9 @@
                     </div>
 
                 </div>
-
+                <!-- Space -->
+                <div style="height: 70px;">
+                </div>
                 <div id="trades"></div>
             </div>
 
@@ -181,12 +183,16 @@
 
                 </div>
             </div>
+            <!-- Space -->
+            <div style="height: 70px;">
+            </div>
+            <div id="trades"></div>
         </div>
 
     </div>
 
     <!-- TradeBots-->
-    <div style=" display: inline-block; width: fit-content;">
+    <div style=" display: block; text-align: center; margin: 0 auto;">
         <!-- TradeBots Table -->
         <div style="width: fit-content; margin:0 auto;">
             <h2 style="text-align: center;">Trade Bots</h2>
@@ -274,18 +280,16 @@
                 </div>
             </div>
         </div>
-        <textarea id="textarea_btrader_logs" style="height: 300px; width: 500px; flex-wrap: nowrap; "></textarea><!--
-{% for bt_log in btrade_logs %}
-{{bt_log}}<br>
-{% endfor %}
--->
+        <!-- Trader Logs-->
+        <div style="width: fit-content; margin:0 auto;">
+            <h4 style="text-align: left; ">Latest Actions</h4>
+            <textarea readonly id="textarea_btrader_logs"
+                style="height: 300px; width: 900px; flex-wrap: nowrap; "></textarea>
+        </div>
     </div>
 
-
-
-
-
     <!-- Strategy Settings-->
+    <!--
     <h3>Strategy Settings</h3>
     <div id="settings ">
 
@@ -299,14 +303,28 @@
             <input type="text" name="rsi_oversold" id="rsi_oversold" placeholder="30">
         </div>
     </div>
+    -->
 
 </div>
 
 
 <script>
+    // Disable linting for the next line
+    // eslint-disable-next-line
+    var logs1 = {{ btrader_logs | tojson }};
+
+    var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
+    logs1.forEach(log1 => {
+        textarea_btrader_logs.append(log1 + "\r\n");
+    });
+</script>
+
+
+
+<script>
     //var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/ltcbusd@trade");
 
-    var tradeDiv = document.getElementById("trades")
+    //var tradeDiv = document.getElementById("trades")
 
     /*
     binanceSocket.onmessage = (event) => {
@@ -322,17 +340,18 @@
     function btrade_clk(menu_id) {
         window.alert('i got to here');
     }
-    /*
+</script>
+<!-- <script>
     var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
-    var logs_arr = "{{btrader_logs}}";
+    var logs_arr = '{{ btrader_logs }}';
     console.log(logs_arr);
 
     for (let index = 0; index < logs_arr.length; index++) {
         const t_log = logs_arr[index];
         textarea_btrader_logs.append(t_log + "\r\n");
     }
-    */
-</script>
+
+</script> -->
 <script>
     var TRADE_SYMBOL = "{{display1_trade_symbol}}";
     var TRADE_INTERVAL = "{{display1_trade_interval}}";

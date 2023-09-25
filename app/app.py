@@ -1,13 +1,15 @@
 from flask import Flask, render_template, redirect, request, flash, jsonify, Response, url_for, session
 from datetime import datetime
 
-import config, bclient, khistory, backtest, btrader, chart_actions, asyncio, btmanager
+import config, bclient, khistory, backtest, btrader, chart_actions, asyncio, btmanager, log_handler
+
+myLogHandler = log_handler.myLogHandler
 
 bconnection = False
 try:
     myClient = bclient.MyClient(config.Binance_Config())
-    bconnection = True
     my_btmanager = btmanager.BTManager(myClient=myClient)
+    bconnection = True
 except Exception as e:
     print(e)
 
@@ -22,13 +24,14 @@ app.secret_key = config.Flask_Config.SECRET_KEY
 
 @app.route("/")
 def index():
-    global my_btmanager
-    global all_intervals
     title = "Binance Trader"
+
+    if bconnection is False:
+        flash(f"Connection Error: {myLogHandler.get_bclient_logs()[-1]}", "upper1")
+
     
     print("index")
 
-    print(session["display1_trade_symbol"], session["display1_trade_interval"])
     #display 1
     if "display1_trade_symbol" not in session:
         session["display1_trade_symbol"] = str(config.Trade_Info.DEFAULT_SYMBOL)
@@ -41,13 +44,19 @@ def index():
     display1_trade_interval = session["display1_trade_interval"]
 
     print(display1_trade_symbol, display1_trade_interval)
+
+
     #quick trade
+    
     if bconnection:
         acc_info = myClient.client.get_account()
         acc_balances = acc_info["balances"]
 
         exc_info = myClient.client.get_exchange_info()
         exc_trade_symbols = exc_info["symbols"]
+    else:
+        acc_balances = []
+        exc_trade_symbols = []
 
 
     #Backtest Message
@@ -58,7 +67,9 @@ def index():
     
     print(backtest_message)
     
-    btraders_info = my_btmanager.myTraders_info
+    btraders_info = []
+    if bconnection:
+        btraders_info = my_btmanager.myTraders_info
 
     session["btrader_id"] = "0"
 
@@ -114,7 +125,6 @@ def quicktrade():
 
 @app.route("/debug/")
 def debug1():
-    global my_btmanager
     
     my_btmanager.create_traders_from_env()
     my_btmanager.start_all_traders()
@@ -125,7 +135,6 @@ def debug1():
 
 @app.route("/debug2/")
 def debug2():
-    global my_btmanager
     
     #ti = my_btmanager.create_trader("BTCUSDT", "5m", 0.00003, config.Trade_Info.DEFAULT_STRAT)
     #my_btmanager.start_trader(ti)
@@ -137,7 +146,6 @@ def debug2():
 
 @app.route("/debug3/")
 def debug3():
-    global my_btmanager
     
     #ti = my_btmanager.create_trader("BTCUSDT", "5m", 0.00003, config.Trade_Info.DEFAULT_STRAT)
     #my_btmanager.start_trader(ti)
@@ -149,7 +157,6 @@ def debug3():
 
 @app.route("/create_new_trader/", methods = ["POST"])
 def create_new_trader():
-    global my_btmanager
 
     all_trade_symbols = []
 
@@ -197,7 +204,6 @@ def create_new_trader():
 
 @app.route("/change_chart/", methods = ["POST"])
 def change_chart():
-    global all_intervals
     all_trade_symbols = []
 
     if bconnection:
@@ -230,10 +236,14 @@ def history():
     __TRADE_SYMBOL = request.args.get("TRADE_SYMBOL", default=config.Trade_Info.DEFAULT_SYMBOL, type=str)
     __TRADE_INTERVAL = request.args.get("TRADE_INTERVAL", default=config.Trade_Info.DEFAULT_INTERVAL, type=str)
 
-    #candlesticks = myClient.client.get_historical_klines(config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0], "15 days")
-    candlesticks = myClient.client.get_klines(symbol = __TRADE_SYMBOL, interval = __TRADE_INTERVAL)
-    p_klines = chart_actions.process_klineslist_to_chartdictformat(candlesticks)
-    return(jsonify(p_klines))
+    if bconnection:
+        #candlesticks = myClient.client.get_historical_klines(config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0], "15 days")
+        candlesticks = myClient.client.get_klines(symbol = __TRADE_SYMBOL, interval = __TRADE_INTERVAL)
+        p_klines = chart_actions.process_klineslist_to_chartdictformat(candlesticks)
+        return(jsonify(p_klines))
+    else:
+        return None
+    
 
 
 @app.route("/bg-run-backtest/", methods = ["POST"])
@@ -281,3 +291,5 @@ def bg_run_backtest():
 
     session["backtest_message"] = "Success"
     return redirect(url_for("index"))
+
+debug1()
