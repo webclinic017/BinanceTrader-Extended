@@ -206,10 +206,7 @@
                     <td id="tbot_td" style="padding: 10px; text-align: center;">Running</td>
                 </tr>
                 {% for item in btraders_info %}
-                <script>
-                    var loopIndex = parseInt("{{ loop.index }}");
-                </script>
-                <tr onclick='btrade_clk(loopIndex)' id="tradebot_row">
+                <tr onclick='btrade_clk({{loop.index -1}})' id="tradebot_row">
                     <td id="tbot_td" style="padding: 10px; text-align: center;">
                         {{btraders_info[item]["TRADE_SYMBOL"]}}</td>
                     <td id="tbot_td" style="padding: 10px; text-align: center;">
@@ -222,7 +219,6 @@
                     <td id="tbot_td" style="padding: 10px; text-align: center;">
                         {{btraders_info[item]["Running"]}}
                     </td>
-
                 </tr>
                 {% endfor %}
             </table>
@@ -315,6 +311,7 @@
     logs1.forEach(log1 => {
         textarea_btrader_logs.append(log1 + "\r\n");
     });
+    textarea_btrader_logs.scrollTop = textarea_btrader_logs.scrollHeight;
 </script>
 
 
@@ -336,7 +333,7 @@
 </script>
 <script>
     function btrade_clk(menu_id) {
-        window.alert('i got to here');
+        window.alert('i got to here' + menu_id);
     }
 </script>
 
