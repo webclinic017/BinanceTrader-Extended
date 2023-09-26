@@ -9,6 +9,7 @@ import TradeStrategies.strategy_manager as s_manager
 from datetime import datetime
 import log_handler
 
+
 class bTrader():
     def __init__(self, trader_id: int, myClient: bclient.MyClient, TRADE_SYMBOL: str, TRADE_INTERVAL: str, ALLOCATED_TRADE_QUANTITY: float, strategy_str = "rsi_strategy01", ) -> None:
         self.trader_id = trader_id
