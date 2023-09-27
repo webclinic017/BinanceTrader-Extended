@@ -309,25 +309,26 @@ def history():
 @app.route("/bg-run-backtest/", methods = ["POST"])
 def bg_run_backtest():
     print(request.form)
+    redirect_url = request.referrer
     date_start = request.form["date_start"]
     date_end = request.form["date_end"]
     if "trade_strat" in request.form:
         trade_strat = request.form["trade_strat"]
         if trade_strat not in config.Strategies.B_STRATS:
             session["backtest_message"] = "backtest Failed - Incorrect Strategy"
-            return redirect(url_for("index"))
+            return redirect(redirect_url)
         session["display1_trade_strat"] = trade_strat
     
     if date_end =="" or date_start == "":
         session["backtest_message"] = "backtest Failed - Enter Dates"
-        return redirect(url_for("index"))
+        return redirect(redirect_url)
     
     datetime_start = datetime.strptime(date_start, '%Y-%m-%d')
     datetime_end = datetime.strptime(date_end, '%Y-%m-%d')
 
     if datetime_end <= datetime_start:
         session["backtest_message"] = "backtest Failed - Wrong Dates"
-        return redirect(url_for("index"))
+        return redirect(redirect_url)
     
     
 
@@ -350,6 +351,6 @@ def bg_run_backtest():
     backtest.run1(csv_name, display1_trade_interval, strategy_str=display1_trade_strat)
 
     session["backtest_message"] = "Success"
-    return redirect(url_for("index"))
+    return redirect(redirect_url)
 
 debug1()

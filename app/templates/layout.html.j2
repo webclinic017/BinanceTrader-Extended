@@ -35,9 +35,9 @@
     </div>
 
 
-    <div style="display: flex; justify-content: center; ">
-        <a style="text-decoration:none" href="/">
-            <h2>{{ title }}</h2>
+    <div id="header" class="myheader" style="display: flex; justify-content: center; ">
+        <a style="text-decoration:none; color: #336699;" href="/">
+            <h1>{{ title }}</h1>
         </a>
     </div>
 
@@ -52,7 +52,7 @@
         {% block footer %}
         <p></p>
 
-        <span onclick="location='https://github.com/BeratDM/BinanceTrader-Extended'">GitHub</span>
+        <span onclick="window.open('https://github.com/BeratDM/BinanceTrader-Extended')">GitHub</span>
         {% endblock %}
     </div>
 </body>

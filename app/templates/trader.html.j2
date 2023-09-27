@@ -44,6 +44,37 @@
 <!-- The Body -->
 <div>
     <div style="text-align: center;">
+        <!-- TradeBots Table -->
+        <div style="width: fit-content; margin:0 auto;">
+            <h2 style="text-align: center;">Trade Bot</h2>
+
+            <table style="margin-left: 20px; border: 1px solid black; border-collapse: collapse;">
+                <tr>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Pair</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Interval</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Strategy</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Trade Limit</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">Running</td>
+                </tr>
+
+                <tr id="tradebot_row">
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btrader_info["TRADE_SYMBOL"]}}</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btrader_info["TRADE_INTERVAL"]}}
+                    </td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btrader_info["TRADE_STRAT"]}}</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btrader_info["ALLOCATED_TRADE_QUANTITY"]}}</td>
+                    <td id="tbot_td" style="padding: 10px; text-align: center;">
+                        {{btrader_info["Running"]}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <!-- Space -->
+        <div style="height: 70px;"></div>
         <div class="1wrapper">
             <!-- Chart -->
             <div style=" display: inline-block;">
@@ -59,7 +90,6 @@
                         <form action="/bg-run-backtest/" , method="post">
                             <table style="margin: auto;">
                                 <tr>
-                                    <td>Strategy</td>
                                     <td>Start Date</td>
                                     <td>End Date</td>
                                     <td></td>
@@ -92,10 +122,6 @@
                 <div id="trades"></div>
             </div>
 
-
-            <!-- Space -->
-            <div style="height: 70px;">
-            </div>
             <div id="trades"></div>
         </div>
 
@@ -103,35 +129,7 @@
 
     <!-- TradeBots-->
     <div style=" display: block; text-align: center; margin: 0 auto;">
-        <!-- TradeBots Table -->
-        <div style="width: fit-content; margin:0 auto;">
-            <h2 style="text-align: center;">Trade Bot</h2>
 
-            <table style="margin-left: 20px; border: 1px solid black; border-collapse: collapse;">
-                <tr>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">Pair</td>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">Interval</td>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">Strategy</td>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">Trade Limit</td>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">Running</td>
-                </tr>
-
-                <tr id="tradebot_row">
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btrader_info["TRADE_SYMBOL"]}}</td>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btrader_info["TRADE_INTERVAL"]}}
-                    </td>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btrader_info["TRADE_STRAT"]}}</td>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btrader_info["ALLOCATED_TRADE_QUANTITY"]}}</td>
-                    <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btrader_info["Running"]}}
-                    </td>
-                </tr>
-            </table>
-        </div>
         <!-- Trader Logs Special-->
         <div style="width: fit-content; margin:0 auto;">
             <h4 style="text-align: left; ">Latest Actions</h4>
@@ -185,23 +183,6 @@
     textarea_btrader_logs_info.scrollTop = textarea_btrader_logs_info.scrollHeight;
 </script>
 
-
-
-<script>
-    //var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/ltcbusd@trade");
-
-    //var tradeDiv = document.getElementById("trades")
-
-    /*
-    binanceSocket.onmessage = (event) => {
-        console.log(event.data);
- 
-        var messageObject = JSON.parse(event.data)
- 
-        tradeDiv.append(messageObject.p)
-    };
-    */
-</script>
 <script>
     function btrade_clk(menu_id) {
         window.alert('i got to here' + menu_id);
