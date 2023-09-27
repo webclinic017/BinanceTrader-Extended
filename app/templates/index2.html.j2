@@ -222,58 +222,43 @@
                 </tr>
                 {% endfor %}
             </table>
-            <div style="text-align:center; margin-top: 20px; margin-bottom: 20px;">
-                <div style="display: inline-block;">
-                    <button id="nt_btn">Create New Trader</button>
-                    <form id="nt_form" style="display: none;" action="/create_new_trader/" , method="post">
-                        <tr>
-                            <td>
-                                <select id="nt_trade_symbol" name="nt_trade_symbol">
-                                    {% for symbol in exc_trade_symbols %}
-                                    <option>{{symbol['symbol']}}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <select id="nt_trade_interval" name="nt_trade_interval">
-                                    {% for interval in all_intervals %}
-                                    <option>{{interval}}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <select id="nt_trade_strat" name="nt_trade_strat">
-                                    {% for strat in trade_strats %}
-                                    <option>{{strat}}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <input type="text" name="nt_trade_quantity" value="Allocated Quantity">
-                            </td>
-                            <td>
-                                <input type="submit" name="submit" value="Create">
-                            </td>
-                        </tr>
-                    </form>
-                    <script>
-                        const ntbtn = document.getElementById('nt_btn');
+        </div>
+        <!-- Create New Trader-->
+        <div style="text-align:center; margin-top: 20px; margin-bottom: 20px;">
+            <div style="display: inline-block;">
+                <button id="nt_btn">Create New Trader</button>
+                <form id="nt_form" style="display: none;" action="/create_new_trader/" , method="post">
+                    <tr>
+                        <td>
+                            <select id="nt_trade_symbol" name="nt_trade_symbol">
+                                {% for symbol in exc_trade_symbols %}
+                                <option>{{symbol['symbol']}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select id="nt_trade_interval" name="nt_trade_interval">
+                                {% for interval in all_intervals %}
+                                <option>{{interval}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <select id="nt_trade_strat" name="nt_trade_strat">
+                                {% for strat in trade_strats %}
+                                <option>{{strat}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td>
+                            <input type="text" name="nt_trade_quantity" value="Allocated Quantity">
+                        </td>
+                        <td>
+                            <input type="submit" name="submit" value="Create">
+                        </td>
+                    </tr>
+                </form>
 
-                        ntbtn.addEventListener('click', () => {
-                            const ntform = document.getElementById('nt_form');
-
-                            if (ntform.style.display === 'none') {
-                                // 👇️ this SHOWS the form
-                                ntform.style.display = 'block';
-                                ntbtn.style.display = 'none';
-                            } else {
-                                // 👇️ this HIDES the form
-                                ntform.style.display = 'none';
-                                ntbtn.style.display = 'block';
-                            }
-                        });
-                    </script>
-                </div>
             </div>
         </div>
         <!-- Trader Logs-->
@@ -303,8 +288,26 @@
 
 </div>
 
-
 <script>
+    //Create New Trader
+    const ntbtn = document.getElementById('nt_btn');
+
+    ntbtn.addEventListener('click', () => {
+        const ntform = document.getElementById('nt_form');
+
+        if (ntform.style.display === 'none') {
+            // 👇️ this SHOWS the form
+            ntform.style.display = 'block';
+            ntbtn.style.display = 'none';
+        } else {
+            // 👇️ this HIDES the form
+            ntform.style.display = 'none';
+            ntbtn.style.display = 'block';
+        }
+    });
+</script>
+<script>
+    //Populate Logs
     var logs1 = {{ btrader_logs | tojson }};
 
     var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
@@ -332,12 +335,14 @@
     */
 </script>
 <script>
+    // Clicked On A Trader In The Trade Bots Table
     function btrade_clk(menu_id) {
         window.alert('i got to here' + menu_id);
     }
 </script>
 
 <script>
+    // Variables For chart.js
     var TRADE_SYMBOL = "{{display1_trade_symbol}}";
     var TRADE_INTERVAL = "{{display1_trade_interval}}";
     var url_history = "{{url_history}}";
