@@ -5,7 +5,7 @@
 {{ super() }}
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BinanceTrader</title>
+{# <title>BinanceTrader</title> #}
 
 <style>
     tr#tradebot_row {
@@ -50,6 +50,7 @@
             <div style=" display: inline-block;">
                 <div id="chart_holder" style="text-align: left;">
                     {{ display1_trade_symbol }} | {{ display1_trade_interval }}
+                    <!-- Change Chart -->
                     <div style="display: inline-block; margin-left: 10px; margin-right: 60px;">
                         <button id="change_chart_btn">Change</button>
                         <form id="change_chart_form" style="display: none;" action="/change_chart/" , method="post">
@@ -336,8 +337,12 @@
 </script>
 <script>
     // Clicked On A Trader In The Trade Bots Table
+    var url_trader = '{{ url_trader }}';
     function btrade_clk(menu_id) {
-        window.alert('i got to here' + menu_id);
+
+        var url = `${url_trader}?btrader_id=${menu_id}`
+        window.alert('i got to here' + url);
+        window.location.href = url;
     }
 </script>
 

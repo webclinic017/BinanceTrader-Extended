@@ -1,11 +1,10 @@
 {% extends "layout.html.j2" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Trader {% endblock %}
 {% block head %}
 {{ super() }}
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BinanceTrader</title>
 
 <style>
     tr#tradebot_row {
@@ -50,47 +49,6 @@
             <div style=" display: inline-block;">
                 <div id="chart_holder" style="text-align: left;">
                     {{ display1_trade_symbol }} | {{ display1_trade_interval }}
-                    <div style="display: inline-block; margin-left: 10px; margin-right: 60px;">
-                        <button id="change_chart_btn">Change</button>
-                        <form id="change_chart_form" style="display: none;" action="/change_chart/" , method="post">
-                            <tr>
-                                <td>
-                                    <select id="d1_trade_symbol" name="d1_trade_symbol">
-                                        {% for symbol in exc_trade_symbols %}
-                                        <option>{{symbol['symbol']}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    <select id="d1_trade_interval" name="d1_trade_interval">
-                                        {% for interval in all_intervals %}
-                                        <option>{{interval}}</option>
-                                        {% endfor %}
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="submit" name="submit" value="Change">
-                                </td>
-                            </tr>
-                        </form>
-                        <script>
-                            const ccbtn = document.getElementById('change_chart_btn');
-
-                            ccbtn.addEventListener('click', () => {
-                                const ccform = document.getElementById('change_chart_form');
-
-                                if (ccform.style.display === 'none') {
-                                    // 👇️ this SHOWS the form
-                                    ccform.style.display = 'block';
-                                    ccbtn.style.display = 'none';
-                                } else {
-                                    // 👇️ this HIDES the form
-                                    ccform.style.display = 'none';
-                                    ccbtn.style.display = 'block';
-                                }
-                            });
-                        </script>
-                    </div>
                     <div id="chart"></div>
                 </div>
 
@@ -107,13 +65,6 @@
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td>
-                                        <select id="trade_strat" name="trade_strat">
-                                            {% for strat in trade_strats %}
-                                            <option>{{strat}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </td>
                                     <td>
                                         <input type="date" name="date_start">
                                     </td>
@@ -141,48 +92,7 @@
                 <div id="trades"></div>
             </div>
 
-            <!-- quicktrade -->
-            <div style=" display: inline-block;  vertical-align: top; width: fit-content;">
-                <div style="border:solid gray 1px; padding: 20px; width: 600px; margin: 20px; ">
-                    <h2 style="text-align: left;">Quick Trade</h2>
-                    <form action="/quicktrade" method="post">
-                        <select id="trade_symbol" name="trade_symbol">
-                            {% for symbol in exc_trade_symbols %}
-                            <option>{{symbol['symbol']}}</option>
-                            {% endfor %}
-                        </select>
-                        <input type="text" id="trade_quantity" name="trade_quantity" placeholder="1.0">
-                        <input type="submit" name="trade_action" value="buy">
-                        <input type="submit" name="trade_action" value="sell">
-                    </form>
-                    <div>
-                        {% for mesg in get_flashed_messages() %}
-                        <h3>{{ mesg }}</h3>
-                        {% endfor %}
-                    </div>
-                </div>
 
-                <div id="acc_balances" style="text-align: center;">
-                    <h2>Account Balances</h2>
-                    <table style="margin-left: auto; margin-right: auto;">
-                        {% for acc_balance in acc_balances %}
-                        {% if acc_balance["free"] | float > 0 %}
-                        <tr>
-                            <td style="text-align: right;">
-                                {{ acc_balance["asset"] }} ::
-                            </td>
-                            <td style="text-align: left;">
-                                {{acc_balance["free"]}}
-                            </td>
-                        </tr>
-                        {% endif %}
-                        {% endfor %}
-                    </table>
-
-
-
-                </div>
-            </div>
             <!-- Space -->
             <div style="height: 70px;">
             </div>
@@ -195,7 +105,7 @@
     <div style=" display: block; text-align: center; margin: 0 auto;">
         <!-- TradeBots Table -->
         <div style="width: fit-content; margin:0 auto;">
-            <h2 style="text-align: center;">Trade Bots</h2>
+            <h2 style="text-align: center;">Trade Bot</h2>
 
             <table style="margin-left: 20px; border: 1px solid black; border-collapse: collapse;">
                 <tr>
@@ -205,81 +115,33 @@
                     <td id="tbot_td" style="padding: 10px; text-align: center;">Trade Limit</td>
                     <td id="tbot_td" style="padding: 10px; text-align: center;">Running</td>
                 </tr>
-                {% for item in btraders_info %}
-                <tr onclick='btrade_clk({{loop.index -1}})' id="tradebot_row">
+
+                <tr id="tradebot_row">
                     <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btraders_info[item]["TRADE_SYMBOL"]}}</td>
+                        {{btrader_info["TRADE_SYMBOL"]}}</td>
                     <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btraders_info[item]["TRADE_INTERVAL"]}}
+                        {{btrader_info["TRADE_INTERVAL"]}}
                     </td>
                     <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btraders_info[item]["TRADE_STRAT"]}}</td>
+                        {{btrader_info["TRADE_STRAT"]}}</td>
                     <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btraders_info[item]["ALLOCATED_TRADE_QUANTITY"]}}</td>
+                        {{btrader_info["ALLOCATED_TRADE_QUANTITY"]}}</td>
                     <td id="tbot_td" style="padding: 10px; text-align: center;">
-                        {{btraders_info[item]["Running"]}}
+                        {{btrader_info["Running"]}}
                     </td>
                 </tr>
-                {% endfor %}
             </table>
-            <div style="text-align:center; margin-top: 20px; margin-bottom: 20px;">
-                <div style="display: inline-block;">
-                    <button id="nt_btn">Create New Trader</button>
-                    <form id="nt_form" style="display: none;" action="/create_new_trader/" , method="post">
-                        <tr>
-                            <td>
-                                <select id="nt_trade_symbol" name="nt_trade_symbol">
-                                    {% for symbol in exc_trade_symbols %}
-                                    <option>{{symbol['symbol']}}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <select id="nt_trade_interval" name="nt_trade_interval">
-                                    {% for interval in all_intervals %}
-                                    <option>{{interval}}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <select id="nt_trade_strat" name="nt_trade_strat">
-                                    {% for strat in trade_strats %}
-                                    <option>{{strat}}</option>
-                                    {% endfor %}
-                                </select>
-                            </td>
-                            <td>
-                                <input type="text" name="nt_trade_quantity" value="Allocated Quantity">
-                            </td>
-                            <td>
-                                <input type="submit" name="submit" value="Create">
-                            </td>
-                        </tr>
-                    </form>
-                    <script>
-                        const ntbtn = document.getElementById('nt_btn');
-
-                        ntbtn.addEventListener('click', () => {
-                            const ntform = document.getElementById('nt_form');
-
-                            if (ntform.style.display === 'none') {
-                                // 👇️ this SHOWS the form
-                                ntform.style.display = 'block';
-                                ntbtn.style.display = 'none';
-                            } else {
-                                // 👇️ this HIDES the form
-                                ntform.style.display = 'none';
-                                ntbtn.style.display = 'block';
-                            }
-                        });
-                    </script>
-                </div>
-            </div>
         </div>
-        <!-- Trader Logs-->
+        <!-- Trader Logs Special-->
         <div style="width: fit-content; margin:0 auto;">
             <h4 style="text-align: left; ">Latest Actions</h4>
-            <textarea readonly id="textarea_btrader_logs"
+            <textarea readonly id="textarea_btrader_logs_special"
+                style="height: 300px; width: 900px; flex-wrap: nowrap; "></textarea>
+        </div>
+        <!-- Trader Logs Info-->
+        <div style="width: fit-content; margin:0 auto;">
+            <h4 style="text-align: left; ">Latest Logs</h4>
+            <textarea readonly id="textarea_btrader_logs_info"
                 style="height: 300px; width: 900px; flex-wrap: nowrap; "></textarea>
         </div>
     </div>
@@ -305,13 +167,22 @@
 
 
 <script>
-    var logs1 = {{ btrader_logs | tojson }};
+    var logs_special = {{ btrader_logs_special | tojson }};
 
-    var textarea_btrader_logs = document.getElementById("textarea_btrader_logs");
-    logs1.forEach(log1 => {
-        textarea_btrader_logs.append(log1["msg"] + "\r\n");
+    var textarea_btrader_logs_special = document.getElementById("textarea_btrader_logs_special");
+    logs_special.forEach(log1 => {
+        textarea_btrader_logs_special.append(log1["msg"] + "\r\n");
     });
-    textarea_btrader_logs.scrollTop = textarea_btrader_logs.scrollHeight;
+    textarea_btrader_logs_special.scrollTop = textarea_btrader_logs_special.scrollHeight;
+</script>
+<script>
+    var logs_info = {{ btrader_logs_info | tojson }};
+
+    var textarea_btrader_logs_info = document.getElementById("textarea_btrader_logs_info");
+    logs_info.forEach(log2 => {
+        textarea_btrader_logs_info.append(log2["msg"] + "\r\n");
+    });
+    textarea_btrader_logs_info.scrollTop = textarea_btrader_logs_info.scrollHeight;
 </script>
 
 

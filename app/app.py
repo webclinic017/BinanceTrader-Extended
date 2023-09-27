@@ -22,9 +22,10 @@ app = Flask(__name__)   ###app = Flask(__name__, template_folder='template') #fi
 app.secret_key = config.Flask_Config.SECRET_KEY
 
 
+title = "Binance Trader"
+
 @app.route("/")
 def index():
-    title = "Binance Trader"
 
     if bconnection is False:
         flash(f"Connection Error: {myLogHandler.get_bclient_logs()[-1]}", "upper1")
@@ -85,9 +86,6 @@ def index():
         print(e)
     print(f"app bt_logs: {btrader_logs}")
 
-    
-
-    print(all_intervals)
 
     return render_template("index2.html.j2", 
                            title = title, 
@@ -96,6 +94,7 @@ def index():
                            display1_trade_symbol=display1_trade_symbol,
                            display1_trade_interval = display1_trade_interval,
                            url_history = url_for("history"),
+                           url_trader = url_for("trader"),
                            backtest_message = backtest_message,
                            btraders_info = btraders_info,
                            btrader_logs = btrader_logs,
@@ -175,16 +174,46 @@ def trader():
     if int(btrader_id) < 0:
         return redirect(url_for("index")) 
     
-    if btrader_id not in my_btmanager.myTraders_info.keys:
+    if btrader_id not in my_btmanager.myTraders_info:
         return redirect(url_for("index"))
     
     session["btrader_id"] = btrader_id
-
+    
     myTrader_info = my_btmanager.myTraders_info[btrader_id]
+
+    display1_trade_symbol = myTrader_info["TRADE_SYMBOL"]
+    display1_trade_interval = myTrader_info["TRADE_INTERVAL"]
+    display1_trade_strat = myTrader_info["TRADE_STRAT"]
+
+    session["display1_trade_symbol"]    = display1_trade_symbol
+    session["display1_trade_interval"]  = display1_trade_interval
+    session["display1_trade_strat"]     = display1_trade_strat 
+
     btrader_logs_info = log_handler.myLogHandler.get_btrader_logs_info( btrader_id= int(btrader_id))
     btrader_logs_special = log_handler.myLogHandler.get_btrader_logs_special(btrader_id= int(btrader_id))
 
-    pass
+    #Backtest Message
+    backtest_message = ""
+    if "backtest_message" in session:
+        backtest_message = session["backtest_message"]
+        session.pop("backtest_message", None)
+    
+    print(backtest_message)
+
+    print(btrader_logs_info)
+    
+    return render_template("trader.html.j2", 
+                           title = title, 
+                           display1_trade_symbol=display1_trade_symbol,
+                           display1_trade_interval = display1_trade_interval,
+                           display1_trade_strat = display1_trade_strat,
+                           url_history = url_for("history"),
+                           url_trader = url_for("trader"),
+                           backtest_message = backtest_message,
+                           btrader_info = myTrader_info,
+                           btrader_logs_special = btrader_logs_special,
+                           btrader_logs_info = btrader_logs_info,
+                           )
 
 @app.route("/create_new_trader/", methods = ["POST"])
 def create_new_trader():
@@ -228,9 +257,9 @@ def create_new_trader():
     else:
         return redirect(url_for("index"))
     # Good Parameters
-    my_btmanager.create_trader(nt_trade_symbol, nt_trade_interval, nt_trade_quantity, nt_trade_strat)
+    nt_id = my_btmanager.create_trader(nt_trade_symbol, nt_trade_interval, nt_trade_quantity, nt_trade_strat)
 
-    return redirect(url_for("index"))
+    return redirect(url_for("trader", btrader_id = nt_id))
 
 
 @app.route("/change_chart/", methods = ["POST"])
