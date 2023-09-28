@@ -17,6 +17,8 @@ class bTrader():
         self.TRADE_SYMBOL = TRADE_SYMBOL
         self.TRADE_INTERVAL = TRADE_INTERVAL
         self.ALLOCATED_TRADE_QUANTITY = ALLOCATED_TRADE_QUANTITY
+
+        self.candle_limit = 200
         
         self.strategy = s_manager.get_strategy_live(strategy_str, report_info= self.print, trade_action= self.trade_action)
 
@@ -28,21 +30,19 @@ class bTrader():
         self.websocket_handler = WebSocketHandler(self.SOCKET, self.on_message, self.print)
         
         #self.start()
-        
+    
 
     def init_closes(self):
         kdata = self.myClient.client.get_klines(symbol= self.TRADE_SYMBOL, interval = self.TRADE_INTERVAL)
+        kdata = kdata[-self.candle_limit:]
 
-        self.closes = []
+        self.candles = convert_to_dicts(kdata)
+        
+        for candle in self.candles:
+            self.strategy.process_candle(candle=candle, calculate_order=False)
+        
 
-        for kline in kdata:
-            price_closed = float(kline[4])
-            self.closes.append(price_closed)
-
-        self.closes = self.closes[-200:] # keep the list to 200 element
-
-        self.print(self.closes) 
-        self.print(f"a bTrader instance is initiated with {len(self.closes)} starting values. Running: {self.ws_running}")
+        self.print(f"a bTrader instance is initiated with {len(self.candles)} starting values. Running: {self.ws_running}", level="setting")
 
 
     def print(self, msg: str, level = "info"):
@@ -79,8 +79,7 @@ class bTrader():
             
         self.print("received message")
         json_message = json.loads(message)
-        #pprint.pprint(json_message)
-
+        
         #look-up the payload of the websocket stream on here https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md  
         candle = json_message["k"]
         is_candle_closed = candle['x']
@@ -89,18 +88,21 @@ class bTrader():
         #initiate logic upon new candle information.
         if is_candle_closed:
             self.print("candle closed at {}".format(price_closed))
-            self.closes.append(float(price_closed))
+            #self.closes.append(float(price_closed))
+            #self.closes = self.closes[-200:] # keep the list to 200 elements
+            #self.print("closes")
+            #self.print(self.closes)
+            #self.print(len(self.closes))
 
-            self.closes = self.closes[-200:] # keep the list to 200 elements
-            self.print("closes")
-            self.print(self.closes)
-            self.print(len(self.closes))
-
-            self.new_candle_closed()
+            self.new_candle_closed(candle)
 
 
-    def new_candle_closed(self):
-        self.strategy.calculate_order(closes=self.closes)
+    def new_candle_closed(self, candle):
+        self.candles.append(candle)
+        self.candles = self.candles[-self.candle_limit:]
+
+        self.strategy.process_candle(candle=candle, calculate_order=True)
+        #self.strategy.calculate_order(closes=self.closes)
         #RSI_Trade01.calculate_trade(client = self.myClient.client, closes = self.closes)
 
 
@@ -153,3 +155,11 @@ class WebSocketHandler:
                         break
 
         loop.run_until_complete(inner_websocket_loop())
+
+
+def convert_to_dicts(list_of_lists):
+    # https://i.imgur.com/3Cwe3dF.png
+    # https://binance-docs.github.io/apidocs/spot/en/#compressed-aggregate-trades-list
+    # https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md
+    keys = ["t", "o", "h", "l", "c", "v", "T", "q", "n", "V", "Q", "B"]
+    return [dict(zip(keys, sublist)) for sublist in list_of_lists]

@@ -8,15 +8,44 @@ import numpy, talib
 
 class Backtest(bt.Strategy):
     def __init__(self):
-        self.rsi = bt.talib.RSI(self.data, period=14)
+        self.RSI_PERIOD = 14
+        self.RSI_OVERBOUGHT = 70
+        self.RSI_OVERSOLD = 30
 
+        self.price_of_position = 10
+        self.sell_if_up = True
+        self.sell_if_up_ratio = 1.02
+
+        self.rsi = bt.talib.RSI(self.data.close, period=self.RSI_PERIOD)
 
     def next(self):
-        if self.rsi < 30 and not self.position:
+        last_close = self.data.close[0] 
+        last_rsi = self.rsi[0]
+
+        #sell current position
+        if last_rsi > self.RSI_OVERBOUGHT or (self.position and self.sell_if_up and (last_close > self.price_of_position *self.sell_if_up_ratio )):
+            if self.position:
+                self.sell(size=1)
+                self.price_of_position = 10
+
+        #buy new position
+        if last_rsi < self.RSI_OVERSOLD and not self.position:
             self.buy(size=1)
+            self.price_of_position = last_close
+
+
+
+# class Backtest(bt.Strategy):
+#     def __init__(self):
+#         self.rsi = bt.talib.RSI(self.data, period=14)
+
+
+#     def next(self):
+#         if self.rsi < 30 and not self.position:
+#             self.buy(size=1)
         
-        if self.rsi > 70 and self.position:
-            self.close()
+#         if self.rsi > 70 and self.position:
+#             self.close()
 
 
 class Live(bStrategy):
@@ -32,19 +61,53 @@ class Live(bStrategy):
         self.sell_if_up = True
         self.sell_if_up_ratio = 1.02
 
-    
+        self.closes = []
 
-    def calculate_order(self, closes):
-        self.in_position
-        self.price_of_position
+    
+    def process_candle(self, candle, calculate_order: bool):
+        # look-up the payload of the websocket stream on here https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md 
+        # Payload: 
+        # {
+        #     "t": 1672515780000, // Kline start time
+        #     "T": 1672515839999, // Kline close time
+        #     "s": "BNBBTC",      // Symbol
+        #     "i": "1m",          // Interval
+        #     "f": 100,           // First trade ID
+        #     "L": 200,           // Last trade ID
+        #     "o": "0.0010",      // Open price
+        #     "c": "0.0020",      // Close price
+        #     "h": "0.0025",      // High price
+        #     "l": "0.0015",      // Low price
+        #     "v": "1000",        // Base asset volume
+        #     "n": 100,           // Number of trades
+        #     "x": false,         // Is this kline closed?
+        #     "q": "1.0000",      // Quote asset volume
+        #     "V": "500",         // Taker buy base asset volume
+        #     "Q": "0.500",       // Taker buy quote asset volume
+        #     "B": "123456"       // Ignore
+        # }
+        try:
+            price_closed = float(candle['c'])
+            self.closes.append(price_closed)
+            self.closes = self.closes[-200:]
+
+            if calculate_order:
+                self.calculate_order()
+        except Exception as e:
+            self.report_info(e, "strategy_error")
+
+
+    
+    def calculate_order(self):
+        self.report_info("in position: {}".format(self.in_position))
+        self.report_info("price of position: {}".format(self.price_of_position))
+        closes = self.closes
+        
         
         self.report_info("Calculating The Market")
         if len(closes) > self.RSI_PERIOD:
-            np_closes = numpy.array(closes)
+            np_closes = numpy.array(closes, dtype=float)
             rsi = talib.RSI(np_closes, self.RSI_PERIOD) #talib.RSI returns multiple RSI values 
-            
-            self.report_info("all rsis calculated so far")
-            self.report_info(rsi)
 
             last_rsi = rsi[-1]
             self.report_info("the current rsi is {}".format(last_rsi))
@@ -87,4 +150,4 @@ class Live(bStrategy):
                             self.price_of_position = last_close
                         #Binance buy logic
             except Exception as e:
-                self.report_info(e)
+                self.report_info(e, "strategy_error")
