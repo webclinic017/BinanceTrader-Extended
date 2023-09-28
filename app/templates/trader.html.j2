@@ -44,11 +44,15 @@
 <!-- The Body -->
 <div>
     <div style="text-align: center;">
-        <!-- TradeBots Table -->
-        <div style="width: fit-content; margin:0 auto;">
-            <h2 style="text-align: center;">Trade Bot</h2>
 
-            <table style="margin-left: 20px; border: 1px solid black; border-collapse: collapse;">
+        <div style="display: inline-block; width: 100px;">
+
+        </div>
+        <!-- TradeBot Table -->
+        <div style="width: fit-content; display: inline-block; ">
+            <h2 style="text-align: center; ">Trade Bot</h2>
+
+            <table style="border: 1px solid black; border-collapse: collapse;">
                 <tr>
                     <td id="tbot_td" style="padding: 10px; text-align: center;">Pair</td>
                     <td id="tbot_td" style="padding: 10px; text-align: center;">Interval</td>
@@ -72,6 +76,17 @@
                     </td>
                 </tr>
             </table>
+        </div>
+        <div style="display: inline-block; width: 100px; vertical-align: bottom;">
+            <td>
+                <button id="btn_trader_toggle_run">
+                    {%if btrader_info["Running"] == True%}
+                    {{"STOP"}}
+                    {%else%}
+                    {{"START"}}
+                    {% endif %}
+                </button>
+            </td>
         </div>
         <!-- Space -->
         <div style="height: 70px;"></div>
@@ -109,9 +124,6 @@
                                     </td>
                                 </tr>
                             </table>
-
-
-
                         </form>
                     </div>
 
@@ -127,7 +139,7 @@
 
     </div>
 
-    <!-- TradeBots-->
+    <!-- Trader Logs -->
     <div style=" display: block; text-align: center; margin: 0 auto;">
 
         <!-- Trader Logs Special-->
@@ -163,7 +175,15 @@
 
 </div>
 
+<script>
 
+    btn_trader_toggle_run = document.getElementById('btn_trader_toggle_run')
+    url_trader_toggle_run = '{{ url_trader_toggle_run }}'
+    console.log(url_trader_toggle_run)
+    btn_trader_toggle_run.addEventListener('click', () => {
+        window.location.replace(url_trader_toggle_run);
+    });
+</script>
 <script>
     var logs_special = {{ btrader_logs_special | tojson }};
 
@@ -183,11 +203,6 @@
     textarea_btrader_logs_info.scrollTop = textarea_btrader_logs_info.scrollHeight;
 </script>
 
-<script>
-    function btrade_clk(menu_id) {
-        window.alert('i got to here' + menu_id);
-    }
-</script>
 
 <script>
     var TRADE_SYMBOL = "{{display1_trade_symbol}}";

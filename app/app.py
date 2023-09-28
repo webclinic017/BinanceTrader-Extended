@@ -209,6 +209,7 @@ def trader():
                            display1_trade_strat = display1_trade_strat,
                            url_history = url_for("history"),
                            url_trader = url_for("trader"),
+                           url_trader_toggle_run = url_for("trader_toggle_run"),
                            backtest_message = backtest_message,
                            btrader_info = myTrader_info,
                            btrader_logs_special = btrader_logs_special,
@@ -260,6 +261,35 @@ def create_new_trader():
     nt_id = my_btmanager.create_trader(nt_trade_symbol, nt_trade_interval, nt_trade_quantity, nt_trade_strat)
 
     return redirect(url_for("trader", btrader_id = nt_id))
+
+
+@app.route("/trader_toggle_run")
+def trader_toggle_run():
+    if bconnection is False:
+        return redirect(url_for("index"))
+    
+    btrader_id = request.args.get("btrader_id", default=session["btrader_id"], type=str)
+    toggle_start = "start"
+    toggle_stop = "stop"
+    toggle = request.args.get("toggle", default="toggle", type=str)
+    
+    if int(btrader_id) < 0:
+        return redirect(url_for("index")) 
+    
+    if btrader_id not in my_btmanager.myTraders_info:
+        return redirect(url_for("index"))
+    
+    myTrader_info = my_btmanager.myTraders_info[btrader_id]
+
+    if myTrader_info["Running"] is False and toggle != toggle_stop:
+        my_btmanager.start_trader(btrader_id)
+    
+    elif myTrader_info["Running"] is True and toggle != toggle_start:
+        my_btmanager.stop_trader(btrader_id)
+
+    return redirect(request.referrer)
+
+
 
 
 @app.route("/change_chart/", methods = ["POST"])

@@ -53,8 +53,8 @@ class BTManager():
 
 
     def start_trader(self, index: int):
-        if self.myTraders[index] is not None:
-            self.myTraders[index].start()
+        if self.myTraders[int(index)] is not None:
+            self.myTraders[int(index)].start()
             self.myTraders_info[str(index)]["Running"] = True
             time.sleep(2)
             return True
@@ -63,8 +63,8 @@ class BTManager():
 
 
     def stop_trader(self, index: int):
-        if self.myTraders[index] is not None:
-            self.myTraders[index].stop()
+        if self.myTraders[int(index)] is not None:
+            self.myTraders[int(index)].stop()
             self.myTraders_info[str(index)]["Running"] = False
 
 

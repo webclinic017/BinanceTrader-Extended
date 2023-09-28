@@ -74,23 +74,7 @@
                                 </td>
                             </tr>
                         </form>
-                        <script>
-                            const ccbtn = document.getElementById('change_chart_btn');
 
-                            ccbtn.addEventListener('click', () => {
-                                const ccform = document.getElementById('change_chart_form');
-
-                                if (ccform.style.display === 'none') {
-                                    // 👇️ this SHOWS the form
-                                    ccform.style.display = 'block';
-                                    ccbtn.style.display = 'none';
-                                } else {
-                                    // 👇️ this HIDES the form
-                                    ccform.style.display = 'none';
-                                    ccbtn.style.display = 'block';
-                                }
-                            });
-                        </script>
                     </div>
                     <div id="chart"></div>
                 </div>
@@ -289,6 +273,23 @@
 
 </div>
 
+<script>
+    const ccbtn = document.getElementById('change_chart_btn');
+
+    ccbtn.addEventListener('click', () => {
+        const ccform = document.getElementById('change_chart_form');
+
+        if (ccform.style.display === 'none') {
+            // 👇️ this SHOWS the form
+            ccform.style.display = 'block';
+            ccbtn.style.display = 'none';
+        } else {
+            // 👇️ this HIDES the form
+            ccform.style.display = 'none';
+            ccbtn.style.display = 'block';
+        }
+    });
+</script>
 <script>
     //Create New Trader
     const ntbtn = document.getElementById('nt_btn');

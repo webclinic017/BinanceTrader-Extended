@@ -120,7 +120,7 @@ class WebSocketHandler:
         self.SOCKET = SOCKET
         self.on_message = on_message
         self.report_error_str = report_error_str
-        self.stop = False
+        self.stop_flag = False
         self.thread = None
 
     
@@ -130,7 +130,7 @@ class WebSocketHandler:
 
     
     def stop(self):
-        self.stop = True
+        self.stop_flag = True
         if self.thread is not None:
             self.thread.join()
             self.thread = None
@@ -144,7 +144,7 @@ class WebSocketHandler:
 
         async def inner_websocket_loop():
             async with conn as ws:
-                while not self.stop:
+                while not self.stop_flag:
                     try:
                         message = await ws.recv()
                         self.on_message(message)
