@@ -24,6 +24,10 @@ class LogHandler:
         print(text1)
 
 
+    def get_error_logs(self) -> list:
+        return self.logs_error
+    
+
     ################ bclient
     def add_bclient_log(self, msg, level="info") -> None:
         text1 = self.cook_msg(msg=msg, level="critical", trader_id=-3)

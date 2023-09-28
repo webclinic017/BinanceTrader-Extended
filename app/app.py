@@ -2,8 +2,7 @@ from flask import Flask, render_template, redirect, request, flash, jsonify, Res
 from datetime import datetime
 
 import config, bclient, khistory, backtest, btrader, chart_actions, asyncio, btmanager, log_handler
-
-myLogHandler = log_handler.myLogHandler
+from pprint import pprint
 
 bconnection = False
 try:
@@ -28,7 +27,7 @@ title = "Binance Trader"
 def index():
 
     if bconnection is False:
-        flash(f"Connection Error: {myLogHandler.get_bclient_logs()[-1]}", "upper1")
+        flash(f"Connection Error: {log_handler.myLogHandler.get_bclient_logs()[-1]}", "upper1")
 
     
     print("index")
@@ -142,12 +141,8 @@ def debug1():
 @app.route("/debug2/")
 def debug2():
     
-    #ti = my_btmanager.create_trader("BTCUSDT", "5m", 0.00003, config.Trade_Info.DEFAULT_STRAT)
-    #my_btmanager.start_trader(ti)
-
-    
-    #my_btmanager.start_trader(0)
-    return "debug02"
+    pprint(log_handler.myLogHandler.get_error_logs())
+    return "asd"
 
 
 @app.route("/debug3/")

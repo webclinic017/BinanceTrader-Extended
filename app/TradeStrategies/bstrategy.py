@@ -8,7 +8,7 @@ class bStrategy():
     #     self.rsi = bt.talib.RSI(self.data, period=14)
 
 
-    def process_candle(self, candle, calculate_order: bool):
+    def process_candles(self, candles, calculate_order: bool):
         # look-up the payload of the websocket stream on here https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md 
         # Payload: 
         # {
@@ -32,7 +32,7 @@ class bStrategy():
         # }
     
         # BE CAREFUL OF HOW THESE DATA TYPES ARE STRINGS
-        self.report_info("default process_candle function of bStrategy.")
+        self.report_info("default process_candles function of bStrategy.")
         if calculate_order:
             self.calculate_order()
 

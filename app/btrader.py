@@ -8,6 +8,7 @@ from backtrader import Strategy
 import TradeStrategies.strategy_manager as s_manager
 from datetime import datetime
 import log_handler
+from concurrent.futures import ThreadPoolExecutor
 
 
 class bTrader():
@@ -19,7 +20,8 @@ class bTrader():
         self.ALLOCATED_TRADE_QUANTITY = ALLOCATED_TRADE_QUANTITY
 
         self.candle_limit = 200
-        
+        self.executor1 = ThreadPoolExecutor(max_workers=1)
+
         self.strategy = s_manager.get_strategy_live(strategy_str, report_info= self.print, trade_action= self.trade_action)
 
         self.ws_running = False
@@ -39,7 +41,7 @@ class bTrader():
         self.candles = convert_to_dicts(kdata)
         
         for candle in self.candles:
-            self.strategy.process_candle(candle=candle, calculate_order=False)
+            self.strategy.process_candles(candles=self.candles, calculate_order=False)
         
 
         self.print(f"a bTrader instance is initiated with {len(self.candles)} starting values. Running: {self.ws_running}", level="setting")
@@ -93,7 +95,6 @@ class bTrader():
             #self.print("closes")
             #self.print(self.closes)
             #self.print(len(self.closes))
-
             self.new_candle_closed(candle)
 
 
@@ -101,7 +102,9 @@ class bTrader():
         self.candles.append(candle)
         self.candles = self.candles[-self.candle_limit:]
 
-        self.strategy.process_candle(candle=candle, calculate_order=True)
+        
+        self.executor1.submit(self.strategy.process_candles, candles=self.candles, calculate_order=True)
+        #self.strategy.process_candle(candle=candle, calculate_order=True)
         #self.strategy.calculate_order(closes=self.closes)
         #RSI_Trade01.calculate_trade(client = self.myClient.client, closes = self.closes)
 
@@ -151,7 +154,7 @@ class WebSocketHandler:
                         message = await ws.recv()
                         self.on_message(message)
                     except Exception as e:
-                        self.report_error_str(f"An error occurred: {e}", "error")
+                        self.report_error_str(f"An error occurred in Websocket: {e}", "error")
                         break
 
         loop.run_until_complete(inner_websocket_loop())

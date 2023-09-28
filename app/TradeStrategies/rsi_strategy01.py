@@ -64,7 +64,7 @@ class Live(bStrategy):
         self.closes = []
 
     
-    def process_candle(self, candle, calculate_order: bool):
+    def process_candles(self, candles, calculate_order: bool):
         # look-up the payload of the websocket stream on here https://github.com/binance/binance-spot-api-docs/blob/master/web-socket-streams.md 
         # Payload: 
         # {
@@ -87,34 +87,38 @@ class Live(bStrategy):
         #     "B": "123456"       // Ignore
         # }
         try:
-            price_closed = float(candle['c'])
-            self.closes.append(price_closed)
-            self.closes = self.closes[-200:]
+            candles = candles[-50:]
+            self.closes.clear
+        
+            for candle in candles:
+                price_closed = float(candle['c'])
+                self.closes.append(price_closed)
 
             if calculate_order:
                 self.calculate_order()
         except Exception as e:
-            self.report_info(e, "strategy_error")
+            self.report_info(f"process_candles: {e}", "strategy_error")
 
 
     
     def calculate_order(self):
-        self.report_info("in position: {}".format(self.in_position))
-        self.report_info("price of position: {}".format(self.price_of_position))
-        closes = self.closes
-        
-        
-        self.report_info("Calculating The Market")
-        if len(closes) > self.RSI_PERIOD:
-            np_closes = numpy.array(closes, dtype=float)
-            rsi = talib.RSI(np_closes, self.RSI_PERIOD) #talib.RSI returns multiple RSI values 
-
-            last_rsi = rsi[-1]
-            self.report_info("the current rsi is {}".format(last_rsi))
+        try:
             self.report_info("in position: {}".format(self.in_position))
-            last_close = closes[-1]
+            self.report_info("price of position: {}".format(self.price_of_position))
+            closes = self.closes
+            
+            
+            self.report_info("Calculating The Market")
+            if len(closes) > self.RSI_PERIOD:
+                np_closes = numpy.array(closes, dtype=float)
+                rsi = talib.RSI(np_closes, self.RSI_PERIOD) #talib.RSI returns multiple RSI values 
 
-            try:
+                last_rsi = rsi[-1]
+                self.report_info("the current rsi is {}".format(last_rsi))
+                self.report_info("in position: {}".format(self.in_position))
+                last_close = closes[-1]
+
+            
                 #sell current position
                 if last_rsi > self.RSI_OVERBOUGHT or (self.in_position and self.sell_if_up and (last_close > self.price_of_position *self.sell_if_up_ratio )):
                     if last_rsi > self.RSI_OVERBOUGHT:
@@ -149,5 +153,5 @@ class Live(bStrategy):
                             self.in_position = True
                             self.price_of_position = last_close
                         #Binance buy logic
-            except Exception as e:
-                self.report_info(e, "strategy_error")
+        except Exception as e:
+            self.report_info(f"calculate_order: {e}", "strategy_error")
