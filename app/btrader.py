@@ -40,8 +40,8 @@ class bTrader():
 
         self.candles = convert_to_dicts(kdata)
         
-        for candle in self.candles:
-            self.strategy.process_candles(candles=self.candles, calculate_order=False)
+        #for candle in self.candles:
+        #    self.strategy.process_candles(candles=self.candles, calculate_order=False)
         
 
         self.print(f"a bTrader instance is initiated with {len(self.candles)} starting values. Running: {self.ws_running}", level="setting")
@@ -130,6 +130,7 @@ class WebSocketHandler:
 
     
     def start(self):
+        self.stop_flag = False
         self.thread = threading.Thread(target=self.websocket_loop)
         self.thread.start()
 
@@ -142,22 +143,26 @@ class WebSocketHandler:
 
     
     def websocket_loop(self):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
+        try:
+            self.report_error_str("Starting Websocket", "info")
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
 
-        conn = websockets.connect(uri = self.SOCKET)
+            conn = websockets.connect(uri = self.SOCKET)
 
-        async def inner_websocket_loop():
-            async with conn as ws:
-                while not self.stop_flag:
-                    try:
-                        message = await ws.recv()
-                        self.on_message(message)
-                    except Exception as e:
-                        self.report_error_str(f"An error occurred in Websocket: {e}", "error")
-                        break
+            async def inner_websocket_loop():
+                async with conn as ws:
+                    while not self.stop_flag:
+                        try:
+                            message = await ws.recv()
+                            self.on_message(message)
+                        except Exception as e:
+                            self.report_error_str(f"An error occurred in Inner_Websocket_Loop: {e}", "error")
+                            break
 
-        loop.run_until_complete(inner_websocket_loop())
+            loop.run_until_complete(inner_websocket_loop())
+        except Exception as e:
+            self.report_error_str(f"An error occurred in Websocket_Loop: {e}", "error")
 
 
 def convert_to_dicts(list_of_lists):
