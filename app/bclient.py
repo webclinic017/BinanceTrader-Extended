@@ -27,14 +27,14 @@ class MyClient():
         print(self.BinanceConfig.BINANCE_API_KEY)
 
 
-    def fill_order(self, trade_symbol : str, side_order : str, use_asset_percentage : bool, trade_quantity : float, order_type=ORDER_TYPE_MARKET, report_str = print) -> Tuple[bool,str]:
+    def fill_order(self, trade_symbol : str, side_order : str, use_asset_percentage : bool, trade_quantity : float, order_type=ORDER_TYPE_MARKET, report_str = log_handler.myLogHandler.add_bclient_log) -> Tuple[bool,str]:
         
         try:
             report_str("use custom trade percentage: {}.".format(use_asset_percentage), level= "order")
             if use_asset_percentage == False:
                 report_str("sending order. {}, {}, {}, {}, {}".format(trade_symbol, side_order, use_asset_percentage, trade_quantity, order_type), level= "order")
                 order = self.client.create_order(symbol = trade_symbol, side=side_order, type=order_type, quantity = trade_quantity)
-                report_str(order, level= "order")
+                report_str(f"Order: {str(order)}", level= "order")
 
             if use_asset_percentage == True:
                 report_str("custom trade percentage is not defined yet", level= "order")
