@@ -13,16 +13,19 @@ def run1(csv_name: str, TRADE_INTERVAL: str, strategy_str = "rsi_strategy01"):
             data_compression = int(TRADE_INTERVAL[:index])
             data_timeframestr = str(TRADE_INTERVAL[index:])
     
-    if data_timeframestr == "s":                # type: ignore
-        data_timeframe = bt.TimeFrame.Seconds   # type: ignore
-    elif data_timeframestr == "m":              # type: ignore
-        data_timeframe = bt.TimeFrame.Minutes   # type: ignore
-    elif data_timeframestr == "d":              # type: ignore
-        data_timeframe = bt.TimeFrame.Days      # type: ignore
-    elif data_timeframestr == "w":              # type: ignore
-        data_timeframe = bt.TimeFrame.Weeks     # type: ignore
-    elif data_timeframestr == "M":              # type: ignore
-        data_timeframe = bt.TimeFrame.Months    # type: ignore
+    if data_timeframestr == "s":                    # type: ignore
+        data_timeframe = bt.TimeFrame.Seconds       # type: ignore
+    elif data_timeframestr == "m":                  # type: ignore
+        data_timeframe = bt.TimeFrame.Minutes       # type: ignore
+    elif data_timeframestr == "h":                  # type: ignore
+        data_timeframe = bt.TimeFrame.Minutes       # type: ignore
+        data_compression = data_compression * 60    # type: ignore
+    elif data_timeframestr == "d":                  # type: ignore
+        data_timeframe = bt.TimeFrame.Days          # type: ignore
+    elif data_timeframestr == "w":                  # type: ignore
+        data_timeframe = bt.TimeFrame.Weeks         # type: ignore
+    elif data_timeframestr == "M":                  # type: ignore
+        data_timeframe = bt.TimeFrame.Months        # type: ignore
 
     cerebro = bt.Cerebro()
     data = bt.feeds.GenericCSVData(dataname = csv_name, dtformat = 2, compression = data_compression, timeframe = data_timeframe) # type: ignore

@@ -17,18 +17,20 @@ class Backtest(bt.Strategy):
         self.rsi = bt.talib.RSI(self.data.close, period=self.RSI_PERIOD) # type: ignore
 
     def next(self):
-        last_close = self.data.close[0] 
-        last_rsi = self.rsi[0]
+        last_close = self.data.close[-1] 
+        last_rsi = self.rsi[-1]
 
         #sell current position
         if last_rsi > self.RSI_OVERBOUGHT or (self.position and self.sell_if_up and (last_close > self.price_of_position *self.sell_if_up_ratio )):
             if self.position:
-                self.sell(size=1)
+                self.close()
                 self.price_of_position = 10
 
         #buy new position
         if last_rsi < self.RSI_OVERSOLD and not self.position:
-            self.buy(size=1)
+            half_cash = self.broker.getcash() / 2
+            size = half_cash / self.data.close[-1]
+            self.buy(size=size)
             self.price_of_position = last_close
 
 

@@ -7,15 +7,33 @@ import talib # type: ignore
 
 class Backtest(bt.Strategy):
     def __init__(self):
-        self.rsi = bt.talib.RSI(self.data, period=14) # type: ignore
+        self.RSI_PERIOD = 14
+        self.RSI_OVERBOUGHT = 60
+        self.RSI_OVERSOLD = 30
+        self.SMA_SHORT = 8
+        self.SMA_LONG = 21
+        self.VOLUME_PERIOD = 35
 
+        self.rsi = bt.talib.RSI(self.data.close, period=self.RSI_PERIOD)             # type: ignore
+        self.sma_short = bt.talib.SMA(self.data.close, period=self.SMA_SHORT)        # type: ignore
+        self.sma_long = bt.talib.SMA(self.data.close, period=self.SMA_LONG)          # type: ignore
+        #self.volume = bt.talib.SMA(self.data.volume, period=self.VOLUME_PERIOD)      # type: ignore
 
     def next(self):
-        if self.rsi < 30 and not self.position:
-            self.buy(size=1)
-        
-        if self.rsi > 70 and self.position:
-            self.close()
+        # Check if we are in the market
+        if not self.position:
+            # We are not in the market, check if we should enter
+            if self.rsi[-1] > self.RSI_OVERBOUGHT and self.sma_short[-1] > self.sma_long[-1]: # and self.data.volume[-1] > self.volume[-1]:     # type: ignore
+                # Buy condition met
+                half_cash = self.broker.getcash() / 2
+                size = half_cash / self.data.close[-1]
+                self.buy(size=size)
+        else:
+            # We are in the market, check if we should sell
+            if self.sma_short[-1] < self.sma_long[-1]:
+                # Sell condition met
+                self.close()
+
 
 #https://www.phind.com/agent?cache=cln24mifl0000jr08lmp3skqr
 class Live(bStrategy):
@@ -23,11 +41,11 @@ class Live(bStrategy):
         super().__init__(report_info, trade_action)
 
         self.RSI_PERIOD = 14
-        self.RSI_OVERBOUGHT = 70
+        self.RSI_OVERBOUGHT = 60
         self.RSI_OVERSOLD = 30
         self.SMA_SHORT = 8
         self.SMA_LONG = 21
-        self.VOLUME_PERIOD = 50
+        self.VOLUME_PERIOD = 45
 
         self.in_position = False
         self.price_of_position = 10
