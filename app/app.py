@@ -5,6 +5,8 @@ import config, bclient, khistory, backtest, btrader, chart_actions, asyncio, btm
 from pprint import pprint
 
 bconnection = False
+myClient: Optional[bclient.MyClient] = None   # type: ignore
+my_btmanager: Optional[btmanager.BTManager] = None  # type: ignore
 try:
     myClient = bclient.MyClient(config.Binance_Config())
     my_btmanager = btmanager.BTManager(myClient=myClient)
@@ -115,15 +117,15 @@ def quicktrade():
     elif request.form['trade_action'] == "sell":
         t_action = "SELL"
     else:
-        flash("Quick Trade Failed: Invalid trade action", "error")
+        flash("Quick Trade Failed: Invalid trade action", "qt_error")
         return redirect("/")
 
-    q_trade_result = myClient.fill_order( request.form['trade_symbol'], t_action, False, float(request.form["trade_quantity"]))
+    q_trade_result, q_trade_msg = myClient.fill_order( request.form['trade_symbol'], t_action, False, float(request.form["trade_quantity"]))
     
     if q_trade_result != True:
-        flash("Quick Trade Failed: " + q_trade_result.message, "error")
+        flash("Quick Trade Failed: " + str(q_trade_msg), "qt_error")
     else:
-        flash("Quick Trade Successful", "message")
+        flash("Quick Trade Successful", "qt_message")
     
     return redirect("/")
 
@@ -327,7 +329,7 @@ def history():
         p_klines = chart_actions.process_klineslist_to_chartdictformat(candlesticks)
         return(jsonify(p_klines))
     else:
-        return None
+        return jsonify({"error": "bconnection is False"})
     
 
 

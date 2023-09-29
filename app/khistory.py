@@ -1,5 +1,5 @@
 from binance.client import Client
-from binance.enums import *
+import binance.enums as b_enums
 import csv, asyncio
 from numpy import genfromtxt
 
@@ -19,7 +19,6 @@ async def download_khistory(client, TRADE_SYMBOL, TRADE_INTERVAL, DATE_PROMPT_ST
 
     filename = get_csv_name(TRADE_SYMBOL, TRADE_INTERVAL)
   
-
     khistory = client.get_historical_klines(TRADE_SYMBOL, TRADE_INTERVAL, DATE_PROMPT_START, DATE_PROMPT_END)
 
 

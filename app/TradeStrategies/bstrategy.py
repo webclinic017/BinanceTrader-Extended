@@ -2,7 +2,7 @@ from typing import Callable
 
 
 class bStrategy():
-    def __init__(self, report_info: Callable[[str, str], None] , trade_action: Callable[[str, float, bool], None]):
+    def __init__(self, report_info: Callable[[str, str], None] , trade_action: Callable[[str, float, bool], bool]):
         self.trade_action = trade_action
         self.report_info = report_info
     #     self.rsi = bt.talib.RSI(self.data, period=14)
@@ -32,11 +32,11 @@ class bStrategy():
         # }
     
         # BE CAREFUL OF HOW THESE DATA TYPES ARE STRINGS
-        self.report_info("default process_candles function of bStrategy.")
+        self.report_info("default process_candles function of bStrategy.", "info")
         if calculate_order:
             self.calculate_order()
 
 
     def calculate_order(self):
-        self.report_info("default calculate_order function of bStrategy.")
+        self.report_info("default calculate_order function of bStrategy.", "info")
         

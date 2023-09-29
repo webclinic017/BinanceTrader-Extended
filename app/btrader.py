@@ -1,6 +1,6 @@
 import json, pprint, talib, numpy
 from binance.client import Client
-from binance.enums import *
+import binance.enums as b_enums
 import bclient
 import asyncio, websockets, threading
 from typing import Callable
@@ -116,7 +116,7 @@ class bTrader():
         final_quantity = float(quantity) * float(self.ALLOCATED_TRADE_QUANTITY)
 
         self.print(f"order signal received. side: {side}, strategy quantity: {quantity}, final quantity: {final_quantity}", "order")
-        order_success = self.myClient.fill_order(trade_symbol= self.TRADE_SYMBOL, side_order= side, use_asset_percentage= is_asset_percentage, trade_quantity= final_quantity)
+        order_success, msg = self.myClient.fill_order(trade_symbol= self.TRADE_SYMBOL, side_order= side, use_asset_percentage= is_asset_percentage, trade_quantity= final_quantity, report_str=self.print)
         return order_success
         
 
@@ -148,7 +148,7 @@ class WebSocketHandler:
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
-            conn = websockets.connect(uri = self.SOCKET)
+            conn = websockets.connect(uri = self.SOCKET) # type: ignore
 
             async def inner_websocket_loop():
                 async with conn as ws:

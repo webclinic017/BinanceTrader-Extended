@@ -8,7 +8,7 @@ class BTManager():
     def __init__(self, myClient: bclient.MyClient) -> None:
         self.myClient = myClient
         self.next_trader_id = 0
-        self.myTraders = list[btrader.bTrader]
+        #self.myTraders = list[btrader.bTrader]
         self.myTraders = []
         self.myTraders_info = {}
 
@@ -18,7 +18,6 @@ class BTManager():
             pass
         except Exception as e:
             print(e)
-
 
 
     def create_trader(self, TRADE_SYMBOL: str, TRADE_INTERVAL: str, ALLOCATED_TRADE_QUANTITY: float, TRADE_STRAT: str) -> int:
@@ -51,7 +50,6 @@ class BTManager():
         return index
 
 
-
     def start_trader(self, index: int):
         if self.myTraders[int(index)] is not None:
             self.myTraders[int(index)].start()
@@ -61,23 +59,13 @@ class BTManager():
         return False
 
 
-
     def stop_trader(self, index: int):
         if self.myTraders[int(index)] is not None:
             self.myTraders[int(index)].stop()
             self.myTraders_info[str(index)]["Running"] = False
 
 
-
     def create_traders_from_env(self):
-        #TRADE_SYMBOLS = Trade_Info.TRADE_SYMBOLS
-        #TRADE_INTERVALS = Trade_Info.TRADE_INTERVALS
-        #TRADE_STRATS = Trade_Info.TRADE_STRATS
-        #for index, TS in enumerate(TRADE_SYMBOLS):
-        #    if (TRADE_INTERVALS[index] is not None) and (TRADE_STRATS[index] is not None):
-        #        if TRADE_STRATS[index] in Strategies.B_STRATS: # check if trade strategy exists
-        #            self.create_trader(TRADE_SYMBOL=TS, TRADE_INTERVAL= TRADE_INTERVALS[index], TRADE_STRAT=TRADE_STRATS[index])
-
         for tbots in Trade_Info.TRADE_BOTS:
             if all(mykey in tbots for mykey in ("TRADE_SYMBOL", "TRADE_INTERVAL", "TRADE_STRAT", "ALLOCATED_TRADE_QUANTITY")):
                 if isinstance(tbots["ALLOCATED_TRADE_QUANTITY"], (int, float)):
@@ -96,5 +84,3 @@ class BTManager():
             if wait is True:
                 pass
     
-#my_btrader1 = btrader.bTrader(myClient=myClient, TRADE_SYMBOL=config.Trade_Info.TRADE_SYMBOLS[0], TRADE_INTERVAL=config.Trade_Info.TRADE_INTERVALS[0])
-#my_btrader2 = btrader.bTrader(myClient=myClient, TRADE_SYMBOL=config.Trade_Info.TRADE_SYMBOLS[1], TRADE_INTERVAL=config.Trade_Info.TRADE_INTERVALS[1])

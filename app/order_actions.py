@@ -1,5 +1,5 @@
 from binance.client import Client
-from binance.enums import *
+from binance.enums import ORDER_TYPE_MARKET
 
 
 

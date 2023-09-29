@@ -1,9 +1,7 @@
 from typing import Callable
 from .bstrategy import bStrategy
-
 import backtrader as bt
-
-from binance.enums import *
+from binance.enums import SIDE_BUY, SIDE_SELL
 import numpy, talib
 
 class Backtest(bt.Strategy):
@@ -16,7 +14,7 @@ class Backtest(bt.Strategy):
         self.sell_if_up = True
         self.sell_if_up_ratio = 1.02
 
-        self.rsi = bt.talib.RSI(self.data.close, period=self.RSI_PERIOD)
+        self.rsi = bt.talib.RSI(self.data.close, period=self.RSI_PERIOD) # type: ignore
 
     def next(self):
         last_close = self.data.close[0] 
@@ -103,51 +101,51 @@ class Live(bStrategy):
     
     def calculate_order(self):
         try:
-            self.report_info("in position: {}".format(self.in_position))
-            self.report_info("price of position: {}".format(self.price_of_position))
+            self.report_info("in position: {}".format(self.in_position), "info")
+            self.report_info("price of position: {}".format(self.price_of_position), "info")
             closes = self.closes
             
             
-            self.report_info("Calculating The Market")
+            self.report_info("Calculating The Market", "info")
             if len(closes) > self.RSI_PERIOD:
                 np_closes = numpy.array(closes, dtype=float)
-                rsi = talib.RSI(np_closes, self.RSI_PERIOD) #talib.RSI returns multiple RSI values 
+                rsi = talib.RSI(np_closes, self.RSI_PERIOD) #talib.RSI returns multiple RSI values # type: ignore
 
                 last_rsi = rsi[-1]
-                self.report_info("the current rsi is {}".format(last_rsi))
-                self.report_info("in position: {}".format(self.in_position))
+                self.report_info("the current rsi is {}".format(last_rsi), "info")
+                self.report_info("in position: {}".format(self.in_position), "info")
                 last_close = closes[-1]
 
             
                 #sell current position
                 if last_rsi > self.RSI_OVERBOUGHT or (self.in_position and self.sell_if_up and (last_close > self.price_of_position *self.sell_if_up_ratio )):
                     if last_rsi > self.RSI_OVERBOUGHT:
-                        self.report_info("in overbought area.")
+                        self.report_info("in overbought area.", "info")
                     if (last_close > self.price_of_position *self.sell_if_up_ratio and self.sell_if_up ):
-                        self.report_info("current profit is above the percentage of {}".format(self.sell_if_up_ratio))
-                    self.report_info(self.in_position)
+                        self.report_info("current profit is above the percentage of {}".format(self.sell_if_up_ratio), "info")
+                    self.report_info(str(self.in_position), "info")
                     if self.in_position:
-                        self.report_info("Sell! Sell! Sell!")
+                        self.report_info("Sell! Sell! Sell!", "info")
                         
-                        #order_success =  order_actions.fill_order(client = client, calculated_order= cook_order(SIDE_SELL))
+                        
                         order_success = self.trade_action(SIDE_SELL, 1.0, False)
                         if order_success:
                             self.in_position = False
                             self.price_of_position = 10
                         #Binance sell logic
                     else:
-                        self.report_info("It is overbough, but I am not in position to sell.")
+                        self.report_info("It is overbough, but I am not in position to sell.", "info")
                     
                 #buy new position
                 if last_rsi < self.RSI_OVERSOLD:
-                    self.report_info("in oversold area.")
-                    self.report_info(self.in_position)
+                    self.report_info("in oversold area.", "info")
+                    self.report_info(str(self.in_position), "info")
                     if self.in_position:
-                        self.report_info("it is oversold, but I am already in position.")
+                        self.report_info("it is oversold, but I am already in position.", "info")
                     else:
-                        self.report_info("Buy! Buy! Buy!")
+                        self.report_info("Buy! Buy! Buy!", "info")
                         
-                        #order_success = order_actions.fill_order(client = client, calculated_order= cook_order(SIDE_BUY))
+                        
                         order_success = self.trade_action(SIDE_BUY, 1.0, False)
                         if order_success:
                             self.in_position = True

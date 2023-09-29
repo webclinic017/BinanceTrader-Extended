@@ -1,12 +1,13 @@
 from typing import Callable
 from .bstrategy import bStrategy
 import backtrader as bt
-from binance.enums import *
-import numpy, talib
+from binance.enums import SIDE_BUY, SIDE_SELL
+import numpy as np
+import talib # type: ignore
 
 class Backtest(bt.Strategy):
     def __init__(self):
-        self.rsi = bt.talib.RSI(self.data, period=14)
+        self.rsi = bt.talib.RSI(self.data, period=14) # type: ignore
 
 
     def next(self):
@@ -23,59 +24,78 @@ class Live(bStrategy):
 
         self.RSI_PERIOD = 14
         self.RSI_OVERBOUGHT = 70
+        self.RSI_OVERSOLD = 30
         self.SMA_SHORT = 8
         self.SMA_LONG = 21
-        self.VOLUME_PERIOD = 45
+        self.VOLUME_PERIOD = 50
 
         self.in_position = False
         self.price_of_position = 10
         self.sell_if_up = True
         self.sell_if_up_ratio = 1.02
 
-    def calculate_order(self, closes, volumes):
-        self.in_position
-        self.price_of_position
+        self.closes = []
+        self.volumes = []
+
+    def process_candles(self, candles, calculate_order: bool):
+        try:
+            candles = candles[-50:]
+            self.closes.clear()
+            self.volumes.clear()
         
-        self.report_info("Calculating The Market")
+            for candle in candles:
+                price_closed = float(candle['c'])
+                volume = float(candle['v'])
+                self.closes.append(price_closed)
+                self.volumes.append(volume)
+
+            if calculate_order:
+                self.calculate_order()
+        except Exception as e:
+            self.report_info(f"process_candles: {e}", "strategy_error")
+
+    def calculate_order(self):
+        closes = np.array(self.closes)
+        volumes = np.array(self.volumes)
+        
+        self.report_info("Calculating The Market", "info")
         if len(closes) > self.RSI_PERIOD:
-            np_closes = numpy.array(closes)
-            np_volumes = numpy.array(volumes)
-            rsi = talib.RSI(np_closes, self.RSI_PERIOD)
-            sma_short = talib.SMA(np_closes, self.SMA_SHORT)
-            sma_long = talib.SMA(np_closes, self.SMA_LONG)
-            avg_volume = talib.SMA(np_volumes, self.VOLUME_PERIOD)
+            np_closes = np.array(closes)
+            np_volumes = np.array(volumes)
+            rsi = talib.RSI(np_closes, self.RSI_PERIOD) # type: ignore
+            sma_short = talib.SMA(np_closes, self.SMA_SHORT) # type: ignore
+            sma_long = talib.SMA(np_closes, self.SMA_LONG) # type: ignore
+            avg_volume = np.mean(np_volumes[-self.VOLUME_PERIOD:])
 
             last_rsi = rsi[-1]
             last_sma_short = sma_short[-1]
             last_sma_long = sma_long[-1]
             last_volume = volumes[-1]
-            last_avg_volume = avg_volume[-1]
             last_close = closes[-1]
 
             try:
                 #sell current position
                 if last_sma_short < last_sma_long:
-                    self.report_info("SMA 8 crossed SMA 21 downwards.")
+                    self.report_info("SMA 8 crossed SMA 21 downwards.", "info")
                     if self.in_position:
-                        self.report_info("Sell! Sell! Sell!")
+                        self.report_info("Sell! Sell! Sell!", "info")
                         order_success = self.trade_action(SIDE_SELL, 1.0, False)
                         if order_success:
                             self.in_position = False
                             self.price_of_position = 10
                     else:
-                        self.report_info("SMA 8 crossed SMA 21 downwards, but I am not in position to sell.")
+                        self.report_info("SMA 8 crossed SMA 21 downwards, but I am not in position to sell.", "info")
                     
                 #buy new position
-                if last_rsi > self.RSI_OVERBOUGHT and last_sma_short > last_sma_long and last_volume > last_avg_volume:
-                    self.report_info("RSI is over 70, SMA 8 crossed SMA 21 upwards, and volume is above average.")
+                if last_rsi > self.RSI_OVERBOUGHT and last_sma_short > last_sma_long and last_volume > avg_volume:
+                    self.report_info("RSI is over 70, SMA 8 crossed SMA 21 upwards, and volume is above average.", "info")
                     if self.in_position:
-                        self.report_info("Conditions met, but I am already in position.")
+                        self.report_info("Conditions met, but I am already in position.", "info")
                     else:
-                        self.report_info("Buy! Buy! Buy!")
+                        self.report_info("Buy! Buy! Buy!", "info")
                         order_success = self.trade_action(SIDE_BUY, 1.0, False)
                         if order_success:
                             self.in_position = True
                             self.price_of_position = last_close
             except Exception as e:
-                self.report_info(e)
-
+                self.report_info(f"calculate_order: {str(e)}", "strategy_error")

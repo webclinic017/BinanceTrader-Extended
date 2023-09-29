@@ -60,8 +60,11 @@ class LogHandler:
 
             if level != "info":
                 self.logs_btrader_special[str(btrader_id)].append(log)
+
+            if level == "error" or level == "critical":
+                self.add_error_log(msg=msg, level=level, trader_id=btrader_id)
         except Exception as e:
-            self.add_error_log(msg=e, level="critical", trader_id=-2)
+            self.add_error_log(msg=str(e), level="critical", trader_id=-2)
 
 
     def get_btrader_logs_all_special(self) -> list:

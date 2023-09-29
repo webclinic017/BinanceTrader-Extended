@@ -1,6 +1,6 @@
 from binance.client import Client
-from binance.enums import *
-
+from binance.enums import ORDER_TYPE_MARKET
+from typing import Tuple
 import config, log_handler
 
 
@@ -27,20 +27,20 @@ class MyClient():
         print(self.BinanceConfig.BINANCE_API_KEY)
 
 
-    def fill_order(self, trade_symbol : str, side_order : str, use_asset_percentage : bool, trade_quantity : float, order_type=ORDER_TYPE_MARKET):
+    def fill_order(self, trade_symbol : str, side_order : str, use_asset_percentage : bool, trade_quantity : float, order_type=ORDER_TYPE_MARKET, report_str = print) -> Tuple[bool,str]:
         
         try:
-            print("use custom trade percentage: {}.".format(use_asset_percentage))
+            report_str("use custom trade percentage: {}.".format(use_asset_percentage), level= "order")
             if use_asset_percentage == False:
-                print("sending order. {}, {}, {}, {}, {}".format(trade_symbol, side_order, use_asset_percentage, trade_quantity, order_type))
+                report_str("sending order. {}, {}, {}, {}, {}".format(trade_symbol, side_order, use_asset_percentage, trade_quantity, order_type), level= "order")
                 order = self.client.create_order(symbol = trade_symbol, side=side_order, type=order_type, quantity = trade_quantity)
-                print(order)
+                report_str(order, level= "order")
 
             if use_asset_percentage == True:
-                print("custom trade percentage is not defined yet")
+                report_str("custom trade percentage is not defined yet", level= "order")
                 pass #get total amount of currency and make %90 quantity
         except Exception as e:
-            print(e)
-            return e
+            report_str(f"Client.fill_order error: {str(e)}", level= "critical")
+            return (False, str(e))
         
-        return True
+        return (True, "")

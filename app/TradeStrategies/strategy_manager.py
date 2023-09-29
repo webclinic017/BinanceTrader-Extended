@@ -18,7 +18,7 @@ def get_strategy_bt(strategy_str: str) -> bt.Strategy:
     return sclass
 
 
-def get_strategy_live(strategy_str: str, report_info: Callable[[str, str], None], trade_action: Callable[[str], None]) -> bStrategy:
+def get_strategy_live(strategy_str: str, report_info: Callable[[str, str], None], trade_action: Callable[[str, float, bool], bool]) -> bStrategy:
     my_ts = rsi_strategy01.Live(report_info=report_info, trade_action=trade_action)
     if strategy_str == Strategies.B_STRATS[0]: #"rsi_strategy01"
         my_ts = rsi_strategy01.Live(report_info=report_info, trade_action=trade_action)
