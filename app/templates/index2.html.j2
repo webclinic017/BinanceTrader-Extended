@@ -322,10 +322,10 @@
 
 
 <script>
+    //Display websocket data
+
     //var binanceSocket = new WebSocket("wss://stream.binance.com:9443/ws/ltcbusd@trade");
-
     //var tradeDiv = document.getElementById("trades")
-
     /*
     binanceSocket.onmessage = (event) => {
         console.log(event.data);
@@ -340,9 +340,7 @@
     // Clicked On A Trader In The Trade Bots Table
     var url_trader = '{{ url_trader }}';
     function btrade_clk(menu_id) {
-
         var url = `${url_trader}?btrader_id=${menu_id}`
-        window.alert('i got to here' + url);
         window.location.href = url;
     }
 </script>

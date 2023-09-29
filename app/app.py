@@ -1,18 +1,21 @@
 from flask import Flask, render_template, redirect, request, flash, jsonify, Response, url_for, session
 from datetime import datetime
-
 import config, bclient, khistory, backtest, btrader, chart_actions, asyncio, btmanager, log_handler
 from pprint import pprint
+from typing import Optional
 
 bconnection = False
-myClient: Optional[bclient.MyClient] = None   # type: ignore
-my_btmanager: Optional[btmanager.BTManager] = None  # type: ignore
+myClient: bclient.MyClient
+my_btmanager: btmanager.BTManager
 try:
     myClient = bclient.MyClient(config.Binance_Config())
     my_btmanager = btmanager.BTManager(myClient=myClient)
     bconnection = True
 except Exception as e:
     print(e)
+    
+
+
 
 trade_strats = config.Strategies.B_STRATS
 all_intervals = config.Strategies.ALL_INTERVALS
@@ -47,9 +50,9 @@ def index():
 
     print(display1_trade_symbol, display1_trade_interval)
 
-
-    #quick trade
     
+    #quick trade
+    assert myClient is not None
     if bconnection:
         acc_info = myClient.client.get_account()
         acc_balances = acc_info["balances"]
@@ -69,6 +72,7 @@ def index():
     
     print(backtest_message)
     
+    assert my_btmanager is not None
     btraders_info = []
     if bconnection:
         btraders_info = my_btmanager.myTraders_info
@@ -108,6 +112,7 @@ def index():
 def quicktrade():
     print(request.form)
 
+    assert myClient is not None
     if bconnection is False:
         return redirect("/")
 
@@ -132,7 +137,7 @@ def quicktrade():
 
 @app.route("/debug/")
 def debug1():
-    
+    assert my_btmanager is not None
     my_btmanager.create_traders_from_env()
     my_btmanager.start_all_traders()
 
@@ -160,6 +165,8 @@ def debug3():
 
 @app.route("/trader")
 def trader():
+
+    assert my_btmanager is not None
     if bconnection is False:
         return redirect(url_for("index"))
     
@@ -218,6 +225,8 @@ def create_new_trader():
 
     all_trade_symbols = []
 
+    assert myClient is not None
+    assert my_btmanager is not None
     if bconnection:
         exc_info = myClient.client.get_exchange_info()
         exc_trade_symbols = exc_info["symbols"]
@@ -262,6 +271,8 @@ def create_new_trader():
 
 @app.route("/trader_toggle_run")
 def trader_toggle_run():
+    assert myClient is not None
+    assert my_btmanager is not None
     if bconnection is False:
         return redirect(url_for("index"))
     
@@ -279,10 +290,10 @@ def trader_toggle_run():
     myTrader_info = my_btmanager.myTraders_info[btrader_id]
 
     if myTrader_info["Running"] is False and toggle != toggle_stop:
-        my_btmanager.start_trader(btrader_id)
+        my_btmanager.start_trader(int(btrader_id))
     
     elif myTrader_info["Running"] is True and toggle != toggle_start:
-        my_btmanager.stop_trader(btrader_id)
+        my_btmanager.stop_trader(int(btrader_id))
 
     return redirect(request.referrer)
 
@@ -293,6 +304,7 @@ def trader_toggle_run():
 def change_chart():
     all_trade_symbols = []
 
+    assert myClient is not None
     if bconnection:
         exc_info = myClient.client.get_exchange_info()
         exc_trade_symbols = exc_info["symbols"]
@@ -323,6 +335,7 @@ def history():
     __TRADE_SYMBOL = request.args.get("TRADE_SYMBOL", default=config.Trade_Info.DEFAULT_SYMBOL, type=str)
     __TRADE_INTERVAL = request.args.get("TRADE_INTERVAL", default=config.Trade_Info.DEFAULT_INTERVAL, type=str)
 
+    assert myClient is not None
     if bconnection:
         #candlesticks = myClient.client.get_historical_klines(config.Trade_Info.TRADE_SYMBOLS[0], config.Trade_Info.TRADE_INTERVALS[0], "15 days")
         candlesticks = myClient.client.get_klines(symbol = __TRADE_SYMBOL, interval = __TRADE_INTERVAL)
@@ -371,7 +384,8 @@ def bg_run_backtest():
     display1_trade_interval = session["display1_trade_interval"]
     display1_trade_strat = session["display1_trade_strat"]
     #download and save kline history as a csv file
-    if(True): 
+    assert myClient is not None
+    if(bconnection): 
         asyncio.run(khistory.download_khistory(myClient.client, display1_trade_symbol, display1_trade_interval, DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
 
     csv_name = khistory.get_csv_name(display1_trade_symbol, display1_trade_interval)
