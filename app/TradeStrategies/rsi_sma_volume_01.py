@@ -45,12 +45,10 @@ class Live(bStrategy):
         self.RSI_OVERSOLD = 30
         self.SMA_SHORT = 8
         self.SMA_LONG = 21
-        self.VOLUME_PERIOD = 45
+        self.VOLUME_PERIOD = 35
 
         self.in_position = False
         self.price_of_position = 10
-        self.sell_if_up = True
-        self.sell_if_up_ratio = 1.02
 
         self.closes = []
         self.volumes = []
