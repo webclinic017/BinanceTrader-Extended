@@ -2,7 +2,7 @@ from binance.client import Client
 from binance.enums import ORDER_TYPE_MARKET
 from typing import Tuple
 import config, log_handler
-from decimal import Decimal
+from decimal import Decimal, getcontext
 
 
 
@@ -31,6 +31,7 @@ class MyClient():
     def fill_order(self, trade_symbol : str, side_order : str, use_asset_percentage : bool, trade_quantity : float, order_type=ORDER_TYPE_MARKET, report_str = log_handler.myLogHandler.add_bclient_log) -> Tuple[bool,str]:
         
         try:
+            getcontext().prec = 14
             d_trade_quantity = Decimal(trade_quantity)
             report_str("use custom trade percentage: {}.".format(use_asset_percentage), level= "order")
             if use_asset_percentage == False:
