@@ -54,7 +54,7 @@ class MyClient():
             d_trade_quantity = (d_trade_quantity // stepSize) * stepSize
             d_trade_quantity = max(min(d_trade_quantity, maxQty), minQty)
 
-            report_str("use custom trade percentage: {}.".format(use_asset_percentage), level= "order")
+            report_str("use custom trade percentage: {}.".format(use_asset_percentage), level= "info")
             if use_asset_percentage == False:
                 report_str("sending order. {}, {}, {}, {}, {}".format(trade_symbol, side_order, use_asset_percentage, d_trade_quantity, order_type), level= "order")
                 order = self.client.create_order(symbol = trade_symbol, side=side_order, type=order_type, quantity = d_trade_quantity)

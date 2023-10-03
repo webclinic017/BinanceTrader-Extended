@@ -127,6 +127,8 @@ class WebSocketHandler:
         self.report_error_str = report_error_str
         self.stop_flag = False
         self.thread = None
+        self.reconnection_limit = 10
+        self.reconnection_count = 0
 
     
     def start(self):
@@ -151,18 +153,35 @@ class WebSocketHandler:
             conn = websockets.connect(uri = self.SOCKET) # type: ignore
 
             async def inner_websocket_loop():
-                async with conn as ws:
-                    while not self.stop_flag:
-                        try:
-                            message = await ws.recv()
-                            self.on_message(message)
-                        except Exception as e:
-                            self.report_error_str(f"An error occurred in Inner_Websocket_Loop: {e}", "error")
-                            break
+                while not self.stop_flag:
+                    try:
+                        async with conn as ws:
+                            self.report_error_str(f"Websocket connection started.", "setting")
+                            while not self.stop_flag:
+                                try:
+                                    message = await ws.recv()
+                                except Exception as e:
+                                    self.report_error_str(f"Connection error occurred in Websocket: {e}", "error")
+                                    break
+                                
+                                try:
+                                    self.on_message(message)
+                                except Exception as e:
+                                    self.report_error_str(f"An error occurred in Inner_Websocket_Loop while processing message: {e}", "error")
+                                    break
+                    except Exception as e:
+                        self.report_error_str(f"Restarting Connection after an error: {e}", "error")
+                    finally:
+                        self.report_error_str(f"Websocket connection ended.", "setting")
+                        if not self.stop_flag and self.reconnection_limit < self.reconnection_count:
+                            self.report_error_str(f"Restarting Connection.", "setting")
+                            self.report_error_str(f"Restart Count: {self.reconnection_count}", "info")
+                            await asyncio.sleep(2)
+
 
             loop.run_until_complete(inner_websocket_loop())
         except Exception as e:
-            self.report_error_str(f"An error occurred in Websocket_Loop: {e}", "error")
+            self.report_error_str(f"An error occurred in the base Websocket_Loop: {e}", "error")
 
 
 def convert_to_dicts(list_of_lists):
