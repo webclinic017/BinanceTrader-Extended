@@ -1,13 +1,12 @@
 import json, pprint, talib, numpy
 from binance.client import Client
 import binance.enums as b_enums
-import bclient
+import bclient, log_handler
 import asyncio, websockets, threading
 from typing import Callable
 from backtrader import Strategy
-import TradeStrategies.strategy_manager as s_manager
+import strategy_manager as s_manager
 from datetime import datetime
-import log_handler
 from concurrent.futures import ThreadPoolExecutor
 
 

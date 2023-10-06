@@ -1,8 +1,8 @@
 import backtrader as bt
 #from TradeStrategies import *
 from TradeStrategies.bstrategy import bStrategy
-import TradeStrategies.rsi_strategy01 as rsi_strategy01
-import TradeStrategies.rsi_sma_volume_01 as rsi_sma_volume_01
+from TradeStrategies import rsi_strategy01 as rsi_strategy01
+from TradeStrategies import rsi_sma_volume_01 as rsi_sma_volume_01
 
 from typing import Callable
 #from bclient import MyClient

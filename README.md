@@ -43,7 +43,7 @@ The Program is running a Flask application with user-friendly UI and has a quick
 
 2. **Run The Program:** Go to the `./app` folder and run `main.py`. Make sure you are using the virtual environment if you set it up. A flask application will start and you can visit the url in your browser.
 
-3. **Strategy Development:** New trading strategies can be developed inside the `TradeStrategies` folder by making a new Python file for your strategy and creating two classes, one for backtesting subclassing the `backtrader.Strategy` class, and the other for live trading subclassing the `bStrategy` class. After that, edit the `TradeStrategies/strategy_manager.py` and your `.env` files similarly to the examples to reference your classes.
+3. **Strategy Development:** New trading strategies can be developed inside the `app/TradeStrategies/` folder by making a new Python file for your strategy and creating two classes, one for backtesting subclassing the `backtrader.Strategy` class, and the other for live trading subclassing the `bStrategy` class. After that, edit the `app/strategy_manager.py` and your `.env` files similarly to the examples to reference your classes.
 
 ---
 

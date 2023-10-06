@@ -1,8 +1,10 @@
 from flask import Flask, render_template, redirect, request, flash, jsonify, Response, url_for, session
 from datetime import datetime
-import config, bclient, khistory, backtest, btrader, chart_actions, asyncio, btmanager, log_handler
+import config, bclient, khistory, btrader, chart_actions, btmanager, log_handler
+import backtest
 from pprint import pprint
 from typing import Optional
+import asyncio
 
 bconnection = False
 myClient: bclient.MyClient
@@ -389,9 +391,10 @@ def bg_run_backtest():
         asyncio.run(khistory.download_khistory(myClient.client, display1_trade_symbol, display1_trade_interval, DATE_PROMPT_START= date_start, DATE_PROMPT_END= date_end)) 
 
     csv_name = khistory.get_csv_name(display1_trade_symbol, display1_trade_interval)
-    backtest.run1(csv_name, display1_trade_interval, strategy_str=display1_trade_strat)
-
+    
+    backtest.myBacktester.run1(csv_name= csv_name, TRADE_INTERVAL= display1_trade_interval, strategy_str=display1_trade_strat)
+    
     session["backtest_message"] = "Success"
     return redirect(redirect_url)
 
-debug1()
+#debug1()
