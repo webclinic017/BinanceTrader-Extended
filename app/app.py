@@ -54,8 +54,9 @@ def index():
 
     
     #quick trade
-    assert myClient is not None
+    
     if bconnection:
+        assert myClient is not None
         acc_info = myClient.client.get_account()
         acc_balances = acc_info["balances"]
 
@@ -74,9 +75,10 @@ def index():
     
     print(backtest_message)
     
-    assert my_btmanager is not None
+    
     btraders_info = []
     if bconnection:
+        assert my_btmanager is not None
         btraders_info = my_btmanager.myTraders_info
 
     session["btrader_id"] = "0"
