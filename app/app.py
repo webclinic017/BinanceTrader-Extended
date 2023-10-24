@@ -17,8 +17,6 @@ except Exception as e:
     print(e)
     
 
-
-
 trade_strats = config.Strategies.B_STRATS
 all_intervals = config.Strategies.ALL_INTERVALS
 
@@ -224,6 +222,7 @@ def trader():
                            btrader_logs_info = btrader_logs_info,
                            )
 
+
 @app.route("/create_new_trader/", methods = ["POST"])
 def create_new_trader():
 
@@ -302,8 +301,6 @@ def trader_toggle_run():
     return redirect(request.referrer)
 
 
-
-
 @app.route("/change_chart/", methods = ["POST"])
 def change_chart():
     all_trade_symbols = []
@@ -347,7 +344,6 @@ def history():
         return(jsonify(p_klines))
     else:
         return jsonify({"error": "bconnection is False"})
-    
 
 
 @app.route("/bg-run-backtest/", methods = ["POST"])
